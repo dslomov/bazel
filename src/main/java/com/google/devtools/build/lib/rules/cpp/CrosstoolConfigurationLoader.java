@@ -43,6 +43,7 @@ import com.google.protobuf.TextFormat.ParseException;
 import com.google.protobuf.UninitializedMessageException;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -309,7 +310,10 @@ public class CrosstoolConfigurationLoader {
       switch (candidateToolchains.size()) {
         case 0: {
           StringBuilder message = new StringBuilder();
-          message.append("No toolchain found for");
+            CrosstoolConfigurationIdentifier config1 =
+                    CrosstoolConfigurationIdentifier.fromReleaseAndCrosstoolConfiguration(release, options);
+
+            message.append("No toolchain found for");
           message.append(config.describeFlags());
           message.append(". Valid toolchains are: ");
           describeToolchainList(message, release.getToolchainList());

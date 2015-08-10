@@ -42,7 +42,7 @@ function usage() {
 }
 
 function parse_options() {
-  local keywords="(build|compile|tools|init|all|determinism|bootstrap|test)"
+  local keywords="(build|compile|tools|init|all|determinism|bootstrap|test|initial)"
   COMMANDS="${1:-build}"
   [[ "${COMMANDS}" =~ ^$keywords(,$keywords)*$ ]] || usage "$@"
   DO_COMPILE=
@@ -51,12 +51,15 @@ function parse_options() {
   DO_FULL_CHECKSUM=1
   DO_TESTS=
   DO_BASE_WORKSPACE_INIT=
+  DO_ONLY_INITIAL=
   [[ "${COMMANDS}" =~ (compile|build|all) ]] && DO_COMPILE=1
   [[ "${COMMANDS}" =~ (tools|build|all) ]] && DO_TOOLS_COMPILATION=1
   [[ "${COMMANDS}" =~ (init|build|all) ]] && DO_BASE_WORKSPACE_INIT=1
   [[ "${COMMANDS}" =~ (bootstrap|determinism|all) ]] && DO_CHECKSUM=1
   [[ "${COMMANDS}" =~ (bootstrap) ]] && DO_FULL_CHECKSUM=
   [[ "${COMMANDS}" =~ (test|all) ]] && DO_TESTS=1
+  [[ "${COMMANDS}" =~ (initial) ]] && DO_ONLY_INITIAL=1
+
 
   BAZEL_BIN=${2:-"bazel-bin/src/bazel"}
   BAZEL_SUM=${3:-"x"}
@@ -77,6 +80,11 @@ if [ ! -x "${BAZEL}" ]; then
   source scripts/bootstrap/compile.sh
   cp ${OUTPUT_DIR}/bazel output/bazel
   BAZEL=$(pwd)/output/bazel
+fi
+
+if [ $DO_ONLY_INITIAL ]; then
+  display "Initial bazel built in $BAZEL"
+  exit 0
 fi
 
 #

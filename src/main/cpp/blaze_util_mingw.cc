@@ -17,6 +17,10 @@
 #include <string.h>  // strerror
 #include <sys/socket.h>
 #include <sys/statfs.h>
+<<<<<<< HEAD
+=======
+#include <sys/socket.h>
+>>>>>>> Current progress
 #include <sys/cygwin.h>
 #include <unistd.h>
 
@@ -24,6 +28,8 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <sstream>  // std::to_string
+#include <string>
 
 #include "src/main/cpp/blaze_util.h"
 #include "src/main/cpp/blaze_util_platform.h"
@@ -111,6 +117,7 @@ string GetDefaultHostJavabase() {
   return javahome;
 }
 
+<<<<<<< HEAD
 // Replace the current process with the given program in the given working
 // directory, using the given argument vector.
 // This function does not return on success.
@@ -197,6 +204,16 @@ string ListSeparator() { return ";"; }
 string ConvertPath(const string& path) {
   char* wpath = static_cast<char*>(cygwin_create_path(
       CCP_POSIX_TO_WIN_A, static_cast<const void*>(path.c_str())));
+=======
+string ListSeparator() {
+  return ";";
+}
+
+
+string ConvertPath(const string& path) {
+  char * wpath = 
+    static_cast<char*>(cygwin_create_path(CCP_POSIX_TO_WIN_A, static_cast<const void*>(path.c_str())));
+>>>>>>> Current progress
   string result(wpath);
   free(wpath);
   return result;

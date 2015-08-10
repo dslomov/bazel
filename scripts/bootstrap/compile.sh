@@ -242,6 +242,7 @@ function cc_compile() {
   local OBJDIR=$1
   shift
   mkdir -p "${OUTPUT_DIR}/${OBJDIR}"
+  echo "CFLAGS=${CFLAGS}"
   for FILE in "$@"; do
     if [[ ! "${FILE}" =~ ^-.*$ ]]; then
       local OBJ=$(basename "${FILE}").o
@@ -267,6 +268,7 @@ function cc_link() {
     local OBJ=$(basename "${FILE}").o
     FILES+=("${OUTPUT_DIR}/${OBJDIR}/${OBJ}")
   done
+  echo "${CXX}" -o ${OUTPUT} "${FILES[@]}" -lstdc++ ${LDFLAGS}
   run_silent "${CXX}" -o ${OUTPUT} "${FILES[@]}" -lstdc++ ${LDFLAGS}
 }
 
@@ -388,6 +390,7 @@ cp ${OUTPUT_DIR}/libblaze.jar ${ARCHIVE_DIR}/A-server.jar
 (cd ${ARCHIVE_DIR}/ ; find . -type f | xargs -P 10 touch -t 198001010000)
 (cd ${ARCHIVE_DIR}/ ; run_silent zip $ZIPOPTS -r -q package.zip * install_base_key java.version)
 cat ${OUTPUT_DIR}/client ${ARCHIVE_DIR}/package.zip > ${OUTPUT_DIR}/bazel
+
 zip -qA ${OUTPUT_DIR}/bazel \
   || echo "(Non-critical error, ignore.)"
 

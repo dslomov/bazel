@@ -26,7 +26,7 @@
 
 EMBED_LABEL_ARG=()
 if [ -n "${EMBED_LABEL}" ]; then
-    EMBED_LABEL_ARG=(--stamp --embed_label "${EMBED_LABEL}")
+    EMBED_LABEL_ARG=(--stamp --embed_label "\"${EMBED_LABEL}\"")
 fi
 
 : ${JAVA_VERSION:="1.8"}
@@ -40,14 +40,20 @@ function bazel_bootstrap() {
   if [[ ! ${BAZEL_SKIP_TOOL_COMPILATION-} =~ "$2" ]]; then
     log "Building $2"
     if [ -n "${4-}" ]; then
+      echo "AAAA"
+      echo ${BAZEL} --nomaster_bazelrc --bazelrc=${BAZELRC} \
+          build ${BAZEL_ARGS} \
+          --javacopt="\"-source ${JAVA_VERSION} -target ${JAVA_VERSION}\"" \
+          "${EMBED_LABEL_ARG[@]}" $1
       ${BAZEL} --nomaster_bazelrc --bazelrc=${BAZELRC} \
           build ${BAZEL_ARGS} \
-          --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
+          --javacopt="\"-source ${JAVA_VERSION} -target ${JAVA_VERSION}'\"" \
           "${EMBED_LABEL_ARG[@]}" $1
     else
+      echo "BBBB"
       run_silent ${BAZEL} --nomaster_bazelrc --bazelrc=${BAZELRC} \
           build ${BAZEL_ARGS} \
-          --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
+          --javacopt="\"-source ${JAVA_VERSION} -target ${JAVA_VERSION}\"" \
           "${EMBED_LABEL_ARG[@]}" $1
     fi
     local file=bazel-bin/${1##//}
@@ -79,6 +85,11 @@ function bootstrap_test() {
   [ -x "${BAZEL_BIN}" ] || fail "syntax: bootstrap bazel-binary"
   run_silent ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} clean \
       --expunge || return $?
+  echo "Command:"
+  echo ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
+      --fetch --nostamp \
+      --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
+      //src:bazel //src:tools
   run_silent ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
       --fetch --nostamp \
       --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \

@@ -45,6 +45,7 @@ public final class OsUtils {
   }
 
   private static boolean jniLibsAvailable() {
+    System.out.println("OS.getCurrent =" + OS.getCurrent() + " " + (OS.getCurrent() == OS.WINDOWS));
     // JNI libraries work fine on Windows, but at the moment we are not using any.
     return OS.getCurrent() != OS.WINDOWS;
   }

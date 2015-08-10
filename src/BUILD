@@ -7,6 +7,7 @@ filegroup(
     name = "libunix",
     srcs = select({
         ":darwin": ["//src/main/native:libunix.dylib"],
+        ":windows": [],        
         "//conditions:default": ["//src/main/native:libunix.so"],
     }),
     visibility = [
@@ -150,5 +151,11 @@ config_setting(
 config_setting(
     name = "freebsd",
     values = {"cpu": "freebsd"},
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "windows",
+    values = {"compiler": "windows_msys64"},
     visibility = ["//visibility:public"],
 )
