@@ -25,16 +25,6 @@
 #include <string>
 #include <vector>
 
-namespace std {
- // Workaround mingw bug where std::to_string is not provided
-template <typename T> string to_string(const T& value) {
-   std::ostringstream strstream;
-   strstream << value;
-   return strstream.str();
-}
-
-}
-
 namespace blaze {
 
 using std::string;
