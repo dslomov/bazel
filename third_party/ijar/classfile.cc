@@ -37,8 +37,20 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "third_party/ijar/common.h"
+
+
+namespace {
+template <typename T>
+std::string ToString(const T& value) {
+  std::ostringstream oss;
+  oss << value;
+  return oss.str();
+}
+}
+
 
 namespace devtools_ijar {
 
@@ -349,7 +361,7 @@ struct Constant_MethodHandle : Constant
   }
 
   std::string Display() {
-    return "Constant_MethodHandle::" + std::to_string(reference_kind_) + "::"
+    return "Constant_MethodHandle::" + ToString(reference_kind_) + "::"
         + constant(reference_index_)->Display();
   }
 
@@ -392,7 +404,7 @@ struct Constant_InvokeDynamic : Constant
 
   std::string Display() {
     return  "Constant_InvokeDynamic::"
-        + std::to_string(bootstrap_method_attr_index_) + "::"
+        + ToString(bootstrap_method_attr_index_) + "::"
         + constant(name_and_type_index_)->Display();
   }
 

@@ -26,7 +26,7 @@
 
 EMBED_LABEL_ARG=()
 if [ -n "${EMBED_LABEL}" ]; then
-    EMBED_LABEL_ARG=(--stamp --embed_label "\"${EMBED_LABEL}\"")
+    EMBED_LABEL_ARG=(--stamp --embed_label "${EMBED_LABEL}")
 fi
 
 : ${JAVA_VERSION:="1.8"}
@@ -41,22 +41,28 @@ function bazel_bootstrap() {
     log "Building $2"
     if [ -n "${4-}" ]; then
       echo "AAAA"
-      echo ${BAZEL} --nomaster_bazelrc --bazelrc=${BAZELRC} \
+      echo ${BAZEL} --nomaster_bazelrc --batch --bazelrc=${BAZELRC} \
           build ${BAZEL_ARGS} \
-          --javacopt="\"-source ${JAVA_VERSION} -target ${JAVA_VERSION}\"" \
+          --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
           "${EMBED_LABEL_ARG[@]}" $1
-      ${BAZEL} --nomaster_bazelrc --bazelrc=${BAZELRC} \
+      ${BAZEL} --nomaster_bazelrc --batch --bazelrc=${BAZELRC} \
           build ${BAZEL_ARGS} \
-          --javacopt="\"-source ${JAVA_VERSION} -target ${JAVA_VERSION}'\"" \
+          --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
           "${EMBED_LABEL_ARG[@]}" $1
     else
       echo "BBBB"
       run_silent ${BAZEL} --nomaster_bazelrc --bazelrc=${BAZELRC} \
           build ${BAZEL_ARGS} \
-          --javacopt="\"-source ${JAVA_VERSION} -target ${JAVA_VERSION}\"" \
+          --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
           "${EMBED_LABEL_ARG[@]}" $1
     fi
     local file=bazel-bin/${1##//}
+    local filename=$(basename ${file})
+    local extension=${filename##*.}
+
+    if [ "-${extension}" == "-" ]; then
+      file="${file}.exe"
+    fi
     cp -f ${file/:/\/} $2
     chmod ${mode} $2
   fi

@@ -25,6 +25,7 @@ cc_binary(
     srcs = select({
         "//src:darwin": ["namespace-sandbox-dummy.c"],
         "//src:freebsd": ["namespace-sandbox-dummy.c"],
+        "//src:windows": ["namespace-sandbox-dummy.c"],
         "//conditions:default": ["namespace-sandbox.c"],
     }),
     copts = ["-std=c99"],

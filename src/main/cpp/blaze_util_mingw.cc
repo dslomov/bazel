@@ -113,6 +113,16 @@ string GetDefaultHostJavabase() {
   return javahome;
 }
 
+void ReplaceAll(std::string* s, const std::string& pattern, const std::string with) {
+  size_t pos = 0;
+  while (true) {
+    size_t pos = s->find(pattern, pos);
+    if (pos == std::string::npos) return;
+    *s = s->replace(pos, pattern.length(), with);
+    pos += with.length();
+  }
+}
+
 // Replace the current process with the given program in the given working
 // directory, using the given argument vector.
 // This function does not return on success.
@@ -149,13 +159,21 @@ void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
     } else {
       cmdline.append(" ");
     }
-    cmdline.append(s);
+
+    if (s.find("\"") != string::npos || s.find(" ") != string::npos) {
+      cmdline.append("\"");
+      string arg = s;
+      cmdline.append(arg);
+      cmdline.append("\"");
+    } else {
+      cmdline.append(s);
+    }
   }
 
   // Copy command line into a mutable buffer.
   // CreateProcess is allowed to mutate its command line argument.
   // Max command line length is per CreateProcess documentation
-  // (https://msdn.microsoft.com/en-us/library/ms682425(VS.85).aspx)
+  // (https://msdn.microsoft.com/en-us/library/ms682425(VS.85).aspx)  
   static const int kMaxCmdLineLength = 32768;
   char actual_line[kMaxCmdLineLength];
   if (cmdline.length() >= kMaxCmdLineLength) {
@@ -165,9 +183,13 @@ void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
   // Add trailing '\0' to be sure.
   actual_line[kMaxCmdLineLength - 1] = '\0';
 
+  fprintf(stderr, "actual_line = \n%s\n", actual_line);
+
   // Execute program.
   STARTUPINFO startupinfo = {0};
   PROCESS_INFORMATION pi = {0};
+
+  SetEnvironmentVariable("BAZEL_SH", getenv("BAZEL_SH"));
 
   bool success = CreateProcess(
       nullptr,       // _In_opt_    LPCTSTR               lpApplicationName,

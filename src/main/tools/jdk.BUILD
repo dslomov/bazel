@@ -22,17 +22,17 @@ filegroup(
 
 filegroup(
     name = "java",
-    srcs = ["bin/java"],
+    srcs = ["bin/java.exe"],
 )
 
 filegroup(
     name = "jar",
-    srcs = ["bin/jar"],
+    srcs = ["bin/jar.exe"],
 )
 
 filegroup(
     name = "javac",
-    srcs = ["bin/javac"],
+    srcs = ["bin/javac.exe"],
 )
 
 BOOTCLASS_JARS = [
