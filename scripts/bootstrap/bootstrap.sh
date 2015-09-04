@@ -33,6 +33,7 @@ fi
 : ${BAZEL_ARGS="--singlejar_top=//src/java_tools/singlejar:bootstrap_deploy.jar \
       --javabuilder_top=//src/java_tools/buildjar:bootstrap_deploy.jar \
       --genclass_top=//src/java_tools/buildjar:bootstrap_genclass_deploy.jar \
+      --verbose_failures \
       --ijar_top=//third_party/ijar"}
 
 function bazel_bootstrap() {
@@ -40,17 +41,11 @@ function bazel_bootstrap() {
   if [[ ! ${BAZEL_SKIP_TOOL_COMPILATION-} =~ "$2" ]]; then
     log "Building $2"
     if [ -n "${4-}" ]; then
-      echo "AAAA"
-      echo ${BAZEL} --nomaster_bazelrc --batch --bazelrc=${BAZELRC} \
-          build ${BAZEL_ARGS} \
-          --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
-          "${EMBED_LABEL_ARG[@]}" $1
       ${BAZEL} --nomaster_bazelrc --batch --bazelrc=${BAZELRC} \
-          build ${BAZEL_ARGS} \
+          build ${BAZEL_ARGS} --verbose_failures \
           --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
           "${EMBED_LABEL_ARG[@]}" $1
     else
-      echo "BBBB"
       run_silent ${BAZEL} --nomaster_bazelrc --bazelrc=${BAZELRC} \
           build ${BAZEL_ARGS} \
           --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
