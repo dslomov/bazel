@@ -37,6 +37,11 @@
 #include <limits.h>
 #include <limits>
 #include <vector>
+#include <string>
+
+#include <windows.h>
+
+#include <io.h>
 
 #include "third_party/ijar/zip.h"
 #include <zlib.h>
@@ -197,10 +202,14 @@ class InputZipFile : public ZipExtractor {
 //
 class OutputZipFile : public ZipBuilder {
  public:
-  OutputZipFile(int fd, u1 * const zipdata_out) :
+  OutputZipFile(const char* zip_file,
+      int fd, u1 * const zipdata_out,
+      size_t mmap_length) :
+      zip_file_name(zip_file),
       fd_out(fd),
       zipdata_out_(zipdata_out),
-      q(zipdata_out) {
+      q(zipdata_out),
+      mmap_length_(mmap_length) {
     errmsg[0] = 0;
   }
 
@@ -251,12 +260,14 @@ class OutputZipFile : public ZipBuilder {
     u2 extra_field_length;
   };
 
+  std::string zip_file_name;
   int fd_out;  // file descriptor for the output file
 
   // OutputZipFile is responsible for maintaining the following
   // pointers. They are allocated by the Create() method before
   // the object is actually created using mmap.
   u1 * const zipdata_out_;        // start of output file mmap
+  size_t mmap_length_;
   u1 *q;  // output cursor
 
   u1 *header_ptr;  // Current pointer to "compression method" entry.
@@ -932,12 +943,18 @@ size_t OutputZipFile::WriteFileSizeInLocalFileHeader(u1 *header_ptr,
 int OutputZipFile::Finish() {
   if (fd_out > 0) {
     WriteCentralDirectory();
-    if (ftruncate(fd_out, GetSize()) < 0) {
-      return error("ftruncate(fd_out, GetSize()): %s", strerror(errno));
-    }
     if (close(fd_out) < 0) {
       return error("close(fd_out): %s", strerror(errno));
     }
+    /*
+    munmap(zipdata_out_, mmap_length_);
+
+    if (truncate(zip_file_name.c_str(), GetSize()) < 0) {
+      //if (!SetEndOfFile(reinterpret_cast<HANDLE>(_get_osfhandle(fd_out)))) {
+      //return error("ftruncate(fd_out, GetSize()): %ld", GetLastError());
+      return error("truncate(%s, GetSize()): %s", zip_file_name.c_str(), strerror(errno));
+    }
+    */
     fd_out = -1;
   }
   return 0;
@@ -1000,7 +1017,7 @@ ZipBuilder* ZipBuilder::Create(const char* zip_file, u8 estimated_size) {
     return NULL;
   }
 
-  return new OutputZipFile(fd_out, (u1*) zipdata_out);
+  return new OutputZipFile(zip_file, fd_out, (u1*) zipdata_out, mmap_length);
 }
 
 u8 ZipBuilder::EstimateSize(char **files) {

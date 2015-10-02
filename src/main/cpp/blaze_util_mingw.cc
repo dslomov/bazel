@@ -183,7 +183,7 @@ void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
   // Add trailing '\0' to be sure.
   actual_line[kMaxCmdLineLength - 1] = '\0';
 
-  fprintf(stderr, "actual_line = \n%s\n", actual_line);
+  //fprintf(stderr, "actual_line = \n%s\n", actual_line);
 
   // Execute program.
   STARTUPINFO startupinfo = {0};

@@ -61,7 +61,7 @@ public final class CommandHelper {
    * For short commands, we just use /bin/bash -c command.
    */
   @VisibleForTesting
-  public static int maxCommandLength = 64000;
+  public static int maxCommandLength = 16000;
 
   /**
    *  A map of remote path prefixes and corresponding runfiles manifests for tools

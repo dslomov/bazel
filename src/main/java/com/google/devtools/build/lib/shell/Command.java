@@ -684,6 +684,11 @@ public final class Command {
   private Process startProcess()
     throws ExecFailedException {
     try {
+      System.out.println(processBuilder.command().get(0) + ": PATH=" + processBuilder.environment().get("PATH"));
+      if (processBuilder.environment().get("PATH") == null) {
+        processBuilder.environment().put("PATH", System.getenv().get("PATH"));
+        System.out.println(processBuilder.command().get(0) + ": updated PATH=" + processBuilder.environment().get("PATH"));
+      }
       return processBuilder.start();
     } catch (IOException ioe) {
       throw new ExecFailedException(this, ioe);

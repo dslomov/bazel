@@ -95,8 +95,8 @@ public class StandaloneSpawnStrategy implements SpawnActionContext {
 
     String cwd = executor.getExecRoot().getPathString();
     Command cmd = new Command(args.toArray(new String[]{}), spawn.getEnvironment(), new File(cwd));
-    System.out.println("Spawning " + cmd.toDebugString() + "\n" +
-            System.getenv());
+    //System.out.println("Spawning " + cmd.toDebugString() + "\n" +
+    //        System.getenv());
 
     FileOutErr outErr = actionExecutionContext.getFileOutErr();
     try {

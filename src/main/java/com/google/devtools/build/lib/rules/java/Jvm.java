@@ -22,6 +22,7 @@ import com.google.devtools.build.lib.cmdline.Label;
 import com.google.devtools.build.lib.concurrent.ThreadSafety.Immutable;
 import com.google.devtools.build.lib.syntax.SkylarkCallable;
 import com.google.devtools.build.lib.syntax.SkylarkModule;
+import com.google.devtools.build.lib.util.OsUtils;
 import com.google.devtools.build.lib.vfs.PathFragment;
 
 /**
@@ -66,14 +67,14 @@ public final class Jvm extends BuildConfiguration.Fragment {
    * Returns the path to the javac binary.
    */
   public PathFragment getJavacExecutable() {
-    return getJavaHome().getRelative("bin/javac");
+    return getJavaHome().getRelative("bin/javac" + OsUtils.executableExtension());
   }
 
   /**
    * Returns the path to the jar binary.
    */
   public PathFragment getJarExecutable() {
-    return getJavaHome().getRelative("bin/jar");
+    return getJavaHome().getRelative("bin/jar" + OsUtils.executableExtension());
   }
 
   /**
@@ -82,7 +83,7 @@ public final class Jvm extends BuildConfiguration.Fragment {
   @SkylarkCallable(name = "java_executable", structField = true,
       doc = "The java executable, i.e. bin/java relative to the Java home.")
   public PathFragment getJavaExecutable() {
-    return getJavaHome().getRelative("bin/java");
+    return getJavaHome().getRelative("bin/java" + OsUtils.executableExtension());
   }
 
   /**
