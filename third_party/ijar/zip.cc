@@ -205,7 +205,6 @@ class OutputZipFile : public ZipBuilder {
   OutputZipFile(const char* zip_file,
       int fd, u1 * const zipdata_out,
       size_t mmap_length) :
-      zip_file_name(zip_file),
       fd_out(fd),
       zipdata_out_(zipdata_out),
       q(zipdata_out),
@@ -220,7 +219,11 @@ class OutputZipFile : public ZipBuilder {
     return errmsg;
   }
 
-  virtual ~OutputZipFile() { Finish(); }
+  virtual ~OutputZipFile() { 
+    fprintf(stderr, "Destructor before Finish\n");
+    Finish(); 
+    fprintf(stderr, "Destructor after Finish\n");
+  }
   virtual u1* NewFile(const char* filename, const u4 attr);
   virtual int FinishFile(size_t filelength, bool compress = false,
                          bool compute_crc = false);
@@ -260,7 +263,6 @@ class OutputZipFile : public ZipBuilder {
     u2 extra_field_length;
   };
 
-  std::string zip_file_name;
   int fd_out;  // file descriptor for the output file
 
   // OutputZipFile is responsible for maintaining the following
@@ -942,19 +944,42 @@ size_t OutputZipFile::WriteFileSizeInLocalFileHeader(u1 *header_ptr,
 
 int OutputZipFile::Finish() {
   if (fd_out > 0) {
+    fprintf(stderr, "Finishing\n");
     WriteCentralDirectory();
+
+    write(fd_out, zipdata_out_, GetSize());
+
     if (close(fd_out) < 0) {
       return error("close(fd_out): %s", strerror(errno));
     }
-    /*
-    munmap(zipdata_out_, mmap_length_);
+    fprintf(stderr, "After close\n");
 
+    /*
+    fprintf(stderr, "Before munmap\n");
+    fprintf(stderr, "Unmapping %lx bytes from %lx\n", mmap_length_, zipdata_out_);
+    if (munmap(static_cast<void*>(zipdata_out_), mmap_length_) < 0) {
+      return error("munmap: %s", strerror(errno)); 
+    }
+    fprintf(stderr, "After munmap\n");
+    */
+    
+    /*
+    if (ftruncate(fd_out, GetSize()) < 0) {
+      fprintf(stderr, "After truncate failed\n");
+      //if (!SetEndOfFile(reinterpret_cast<HANDLE>(_get_osfhandle(fd_out)))) {
+      return error("ftruncate(fd_out, GetSize()): %ld", GetLastError());
+      //return error("ftruncate(%s, GetSize()): %s", zip_file_name.c_str(), strerror(errno));
+    }    
+    fprintf(stderr, "After truncate successful\n");
+    */
+    
+    /*
     if (truncate(zip_file_name.c_str(), GetSize()) < 0) {
       //if (!SetEndOfFile(reinterpret_cast<HANDLE>(_get_osfhandle(fd_out)))) {
       //return error("ftruncate(fd_out, GetSize()): %ld", GetLastError());
       return error("truncate(%s, GetSize()): %s", zip_file_name.c_str(), strerror(errno));
-    }
-    */
+    } 
+    */   
     fd_out = -1;
   }
   return 0;
@@ -1001,17 +1026,19 @@ ZipBuilder* ZipBuilder::Create(const char* zip_file, u8 estimated_size) {
   }
 
   // Create mmap-able sparse file
-  if (ftruncate(fd_out, estimated_size) < 0) {
-    return NULL;
-  }
+  //if (ftruncate(fd_out, estimated_size) < 0) {
+  //  return NULL;
+  //}
 
   // Ensure that any buffer overflow in JarStripper will result in
   // SIGSEGV or SIGBUS by over-allocating beyond the end of the file.
   size_t mmap_length = std::min(estimated_size + sysconf(_SC_PAGESIZE),
                                 (u8) std::numeric_limits<size_t>::max());
 
-  void *zipdata_out = mmap(NULL, mmap_length, PROT_WRITE,
-                           MAP_SHARED, fd_out, 0);
+  //void *zipdata_out = mmap(NULL, mmap_length, PROT_WRITE,
+  //                         MAP_SHARED, fd_out, 0);
+  void* zipdata_out = malloc(mmap_length);
+  fprintf(stderr, "Mapping %lx bytes from %lx\n", mmap_length, zipdata_out);
   if (zipdata_out == MAP_FAILED) {
     fprintf(stderr, "output_length=%llu\n", estimated_size);
     return NULL;

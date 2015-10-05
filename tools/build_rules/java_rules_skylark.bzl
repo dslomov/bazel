@@ -47,7 +47,7 @@ def java_library_impl(ctx):
       executable = False)
 
   # Cleaning build output directory
-  cmd = "set -e;rm -rf " + build_output + " " + java_output + " " + javalist_output + "\n"
+  cmd = "set -ex;rm -rf " + build_output + " " + java_output + " " + javalist_output + "\n"
   cmd += "mkdir " + build_output + " " + java_output + "\n"
   files = " @" + sources_param_file.path
 

@@ -41,7 +41,7 @@ function bazel_bootstrap() {
   if [[ ! ${BAZEL_SKIP_TOOL_COMPILATION-} =~ "$2" ]]; then
     log "Building $2"
     if [ -n "${4-}" ]; then
-      echo ${BAZEL} --nomaster_bazelrc --batch --bazelrc=${BAZELRC} \
+      run_silent ${BAZEL} --nomaster_bazelrc --batch --bazelrc=${BAZELRC} \
           build ${BAZEL_ARGS} --verbose_failures \
           --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
           "${EMBED_LABEL_ARG[@]}" $1
