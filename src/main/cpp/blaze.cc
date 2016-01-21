@@ -1018,9 +1018,9 @@ static void EnsureCorrectRunningVersion() {
     unlink(installation_path.c_str());
     if (symlink(globals->options.install_base.c_str(),
                 installation_path.c_str())) {
-      pdie(blaze_exit_code::LOCAL_ENVIRONMENTAL_ERROR,
-           "failed to create installation symlink '%s'",
+      printf("failed to create installation symlink '%s' - ignored",
            installation_path.c_str());
+      return;
     }
     const time_t time_now = time(NULL);
     struct utimbuf times = { time_now, time_now };

@@ -225,7 +225,7 @@ class RunfilesCreator {
       // Technically, this will cause problems if the user's umask contains
       // 0200, but we don't care. Anyone who does that deserves what's coming.
       if (mkdir(output_base_.c_str(), 0777) != 0) {
-        PDIE("creating directory '%s'", output_base_.c_str());
+        PDIE("here: creating directory '%s'", output_base_.c_str());
       }
     } else {
       EnsureDirReadAndWritePerms(output_base_);

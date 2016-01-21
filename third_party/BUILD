@@ -458,6 +458,13 @@ config_setting(
     values = {"compiler": "windows_msys64_mingw64"},
 )
 
+
+config_setting(
+    name = "windows_msys64",
+    values = {"compiler": "windows_msys64"},
+)
+
+
 config_setting(
     name = "windows_clang",
     values = {"compiler": "windows_clang"},
