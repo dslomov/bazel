@@ -444,6 +444,13 @@ public final class BuildConfiguration {
             return "darwin";
           case FREEBSD:
             return "freebsd";
+          case WINDOWS:
+              switch (CPU.getCurrent()) {
+                case X86_32:
+                    return "piii";
+                case X86_64:
+                    return "x64_windows";
+              }
           case LINUX:
             switch (CPU.getCurrent()) {
               case X86_32:

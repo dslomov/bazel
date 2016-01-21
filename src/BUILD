@@ -8,6 +8,7 @@ filegroup(
     srcs = select({
         ":darwin": ["//src/main/native:libunix.dylib"],
         ":darwin_x86_64": ["//src/main/native:libunix.dylib"],
+        ":windows": [],        
         "//conditions:default": ["//src/main/native:libunix.so"],
     }),
     visibility = [
@@ -54,6 +55,7 @@ genrule(
     name = "java-version",
     srcs = [":java_toolchain_content"],
     outs = ["java.version"],
+          # JAVA_VERSION=$$(echo $${VERSION_LINE} | sed -E 's/.*value="([^"])".*/\\1/');    
     cmd = """
           VERSION_LINE=$$(cat $< | grep target_version);
           JAVA_VERSION=$$(echo $${VERSION_LINE} | sed 's/.*value="\\([^"]\\)".*/\\1/');

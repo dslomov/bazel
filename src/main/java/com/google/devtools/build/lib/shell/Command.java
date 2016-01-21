@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -189,11 +190,18 @@ public final class Command {
    * working directory is used
    * @throws IllegalArgumentException if commandLine is null or empty
    */
-  public Command(final String[] commandLineElements,
+  public Command(String[] commandLineElements,
                  final Map<String, String> environmentVariables,
                  final File workingDirectory) {
     if (commandLineElements == null || commandLineElements.length == 0) {
       throw new IllegalArgumentException("command line is null or empty");
+    }
+    String executable = commandLineElements[0];
+    File pathFragment = new File(executable);
+    if (!pathFragment.isAbsolute()) {
+      File file = new File(workingDirectory, executable);
+      commandLineElements = Arrays.copyOf(commandLineElements, commandLineElements.length);
+      commandLineElements[0] = file.getAbsolutePath();
     }
     this.processBuilder =
       new ProcessBuilder(commandLineElements);
@@ -684,6 +692,11 @@ public final class Command {
   private Process startProcess()
     throws ExecFailedException {
     try {
+      System.out.println(processBuilder.command().get(0) + ": PATH=" + processBuilder.environment().get("PATH"));
+      if (processBuilder.environment().get("PATH") == null) {
+        processBuilder.environment().put("PATH", System.getenv().get("PATH"));
+        System.out.println(processBuilder.command().get(0) + ": updated PATH=" + processBuilder.environment().get("PATH"));
+      }
       return processBuilder.start();
     } catch (IOException ioe) {
       throw new ExecFailedException(this, ioe);

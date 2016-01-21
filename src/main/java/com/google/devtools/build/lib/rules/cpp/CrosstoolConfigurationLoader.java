@@ -312,7 +312,10 @@ public class CrosstoolConfigurationLoader {
       switch (candidateToolchains.size()) {
         case 0: {
           StringBuilder message = new StringBuilder();
-          message.append("No toolchain found for");
+            CrosstoolConfigurationIdentifier config1 =
+                    CrosstoolConfigurationIdentifier.fromReleaseAndCrosstoolConfiguration(release, options);
+
+            message.append("No toolchain found for");
           message.append(config.describeFlags());
           message.append(". Valid toolchains are: ");
           describeToolchainList(message, release.getToolchainList());

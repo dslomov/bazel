@@ -39,8 +39,10 @@ function usage() {
 }
 
 function parse_options() {
-  local keywords="(compile|all|determinism|bootstrap|test)"
+
+  local keywords="(compile|all|determinism|bootstrap|test|initial)"
   COMMANDS="${1:-compile}"
+
   [[ "${COMMANDS}" =~ ^$keywords(,$keywords)*$ ]] || usage "$@"
   DO_COMPILE=
   DO_CHECKSUM=
@@ -50,6 +52,8 @@ function parse_options() {
   [[ "${COMMANDS}" =~ (bootstrap|determinism|all) ]] && DO_CHECKSUM=1
   [[ "${COMMANDS}" =~ (bootstrap) ]] && DO_FULL_CHECKSUM=
   [[ "${COMMANDS}" =~ (test|all) ]] && DO_TESTS=1
+  [[ "${COMMANDS}" =~ (initial) ]] && DO_ONLY_INITIAL=1
+
 
   BAZEL_BIN=${2:-"bazel-bin/src/bazel"}
   BAZEL_SUM=${3:-"x"}
@@ -68,6 +72,11 @@ if [ ! -x "${BAZEL}" ]; then
   display "$INFO    $0 ${COMMANDS} /path/to/bazel"
   new_step 'Building Bazel from scratch'
   source scripts/bootstrap/compile.sh
+fi
+
+if [ $DO_ONLY_INITIAL ]; then
+  display "Initial bazel built in $BAZEL"
+  exit 0
 fi
 
 #

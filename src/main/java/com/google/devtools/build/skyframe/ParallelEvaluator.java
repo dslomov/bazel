@@ -164,7 +164,7 @@ public final class ParallelEvaluator implements Evaluator {
     this.inflightKeysReceiver = inflightKeysReceiver;
     this.reporter = Preconditions.checkNotNull(reporter);
     this.keepGoing = keepGoing;
-    this.threadCount = threadCount;
+    this.threadCount = 2; //threadCount;
     this.progressReceiver = progressReceiver;
     this.dirtyKeyTracker = Preconditions.checkNotNull(dirtyKeyTracker);
     this.replayingNestedSetEventVisitor =
