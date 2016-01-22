@@ -38,7 +38,6 @@ fi
       --genrule_strategy=standalone --spawn_strategy=standalone \
       "${EXTRA_BAZEL_ARGS:-}"}
 
-<<<<<<< HEAD
 if [ -z "${BAZEL-}" ]; then
   function bazel_build() {
     bootstrap_build ${BAZEL_ARGS-} \
@@ -57,8 +56,8 @@ else
            "${@}"
   }
 fi
-=======
-function bazel_bootstrap() {
+
+function bazel_bootstrap_old() {
   local mode=${3:-"0644"}
   if [[ ! ${BAZEL_SKIP_TOOL_COMPILATION-} =~ "$2" ]]; then
     log "Building $2"
@@ -84,7 +83,6 @@ function bazel_bootstrap() {
     chmod ${mode} $2
   fi
 }
->>>>>>> Cumulative commit with all changes.
 
 function md5_outputs() {
   [ -n "${BAZEL_TEST_XTRACE:-}" ] && set +x  # Avoid garbage in the output
