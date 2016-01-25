@@ -7,10 +7,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="jsr-305" level="project" />
-    <orderEntry type="library" name="tomcat-annotations-api-8.0.5" level="project" />
-    <orderEntry type="library" name="guava" level="project" />
     <orderEntry type="library" name="libdd_plist" level="project" />
+    <orderEntry type="library" name="jsr-305" level="project" />
+    <orderEntry type="library" name="guava" level="project" />
+    <orderEntry type="library" name="tomcat-annotations-api-8.0.5" level="project" />
     <orderEntry type="module" module-name="dd_plist" />
   </component>
 </module>

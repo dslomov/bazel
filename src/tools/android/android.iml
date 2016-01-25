@@ -7,13 +7,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="asm" level="project" />
-    <orderEntry type="library" name="apache-commons-compress-1.9" level="project" />
-    <orderEntry type="library" name="android_common" level="project" />
-    <orderEntry type="library" name="jsr-305" level="project" />
-    <orderEntry type="library" name="tomcat-annotations-api-8.0.5" level="project" />
-    <orderEntry type="library" name="guava" level="project" />
     <orderEntry type="library" name="protobuf-java-3.0.0-beta-1" level="project" />
+    <orderEntry type="library" name="jsr-305" level="project" />
+    <orderEntry type="library" name="android_common" level="project" />
+    <orderEntry type="library" name="asm" level="project" />
+    <orderEntry type="library" name="guava" level="project" />
+    <orderEntry type="library" name="tomcat-annotations-api-8.0.5" level="project" />
+    <orderEntry type="library" name="apache-commons-compress-1.9" level="project" />
     <orderEntry type="module" module-name="test" />
     <orderEntry type="module" module-name="buildjar" />
     <orderEntry type="module" module-name="main" />
