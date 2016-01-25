@@ -113,7 +113,7 @@ function bootstrap_test() {
   echo ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
       --fetch --nostamp \
       --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
-      //src:bazel //src:tools
+      src:bazel src:tools
   run_silent ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
       ${EXTRA_BAZEL_ARGS-} \
       --strategy=Javac=worker --worker_quit_after_build \
