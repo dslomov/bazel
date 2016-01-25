@@ -105,7 +105,7 @@ function get_outputs_sum() {
 function bootstrap_test() {
   local BAZEL_BIN=$1
   local BAZEL_SUM=$2
-  local BAZEL_TARGET=${3:-//src:bazel}
+  local BAZEL_TARGET=${3:-src:bazel}
   [ -x "${BAZEL_BIN}" ] || fail "syntax: bootstrap bazel-binary"
   run_silent ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} clean \
       --expunge || return $?
@@ -113,7 +113,7 @@ function bootstrap_test() {
   echo ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
       --fetch --nostamp \
       --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
-      //src:bazel //src:tools
+      src:bazel src:tools
   run_silent ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
       ${EXTRA_BAZEL_ARGS-} \
       --strategy=Javac=worker --worker_quit_after_build \
