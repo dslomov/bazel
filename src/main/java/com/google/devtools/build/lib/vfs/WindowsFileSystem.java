@@ -155,6 +155,19 @@ public class WindowsFileSystem extends JavaIoFileSystem {
     return status;
   }
 
+  @Override
+  protected boolean isDirectory(Path path, boolean followSymlinks) {
+    if (!followSymlinks) {
+      try {
+        if (isJunction(getIoFile(path).toPath())) return false;
+      } catch (IOException e) {
+        e.printStackTrace();
+        return false;
+      }
+    }
+    return super.isDirectory(path, followSymlinks);
+  }
+
   private static boolean isJunction(java.nio.file.Path p) throws IOException {
     // Jury-rigged
     return p.compareTo(p.toRealPath()) != 0;
