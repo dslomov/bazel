@@ -8,12 +8,12 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="javac" level="project" />
-    <orderEntry type="library" name="jsr-305" level="project" />
     <orderEntry type="library" name="junit-4.11" level="project" />
-    <orderEntry type="library" name="tomcat-annotations-api-8.0.5" level="project" />
-    <orderEntry type="library" name="guava" level="project" />
     <orderEntry type="library" name="error_prone" level="project" />
+    <orderEntry type="library" name="jsr-305" level="project" />
+    <orderEntry type="library" name="guava" level="project" />
+    <orderEntry type="library" name="javac" level="project" />
+    <orderEntry type="library" name="tomcat-annotations-api-8.0.5" level="project" />
     <orderEntry type="module" module-name="test" />
     <orderEntry type="module" module-name="main" />
   </component>
