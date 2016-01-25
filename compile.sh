@@ -98,7 +98,7 @@ if [ $DO_COMPILE ]; then
   new_step 'Building Bazel with Bazel'
   display "."
   log "Building output/bazel"
-  bazel_build //src:bazel
+  bazel_build src:bazel || fail "Building Bazel with Bazel failed"
   cp -f bazel-bin/src/bazel output/bazel
   chmod 0755 output/bazel
   BAZEL=$(pwd)/output/bazel
