@@ -53,7 +53,8 @@ else
            --verbose_failures \
            --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
            "${EMBED_LABEL_ARG[@]}" \
-           "${@}"
+           "${@}" \
+    || exit 128
   }
 fi
 
