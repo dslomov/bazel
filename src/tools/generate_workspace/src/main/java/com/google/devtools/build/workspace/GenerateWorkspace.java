@@ -19,10 +19,7 @@ import com.google.devtools.build.lib.events.Event;
 import com.google.devtools.build.lib.events.StoredEventHandler;
 import com.google.devtools.build.lib.packages.Package;
 import com.google.devtools.build.lib.util.OS;
-import com.google.devtools.build.lib.vfs.FileSystem;
-import com.google.devtools.build.lib.vfs.JavaIoFileSystem;
-import com.google.devtools.build.lib.vfs.Path;
-import com.google.devtools.build.lib.vfs.UnixFileSystem;
+import com.google.devtools.build.lib.vfs.*;
 import com.google.devtools.common.options.OptionsParser;
 
 import java.io.File;
@@ -88,7 +85,7 @@ public class GenerateWorkspace {
 
   static FileSystem getFileSystem() {
     return OS.getCurrent() == OS.WINDOWS
-        ? new JavaIoFileSystem() : new UnixFileSystem();
+        ? new WindowsFileSystem() : new UnixFileSystem();
   }
 
   private void generateFromWorkspace(List<String> projects) {
