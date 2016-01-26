@@ -35,7 +35,9 @@ cc_binary(
         "//src:darwin_x86_64": ["namespace-sandbox-dummy.c"],
         "//src:freebsd": ["namespace-sandbox-dummy.c"],
         "//src:windows": ["namespace-sandbox-dummy.c"],
-        "//conditions:default": ["namespace-sandbox.c"],
+        # todo(dslomov)
+        "//conditions:default":["namespace-sandbox-dummy.c"],
+        #"//conditions:default": ["namespace-sandbox.c"],
     }),
     copts = ["-std=c99"],
     linkopts = ["-lm"],
@@ -46,7 +48,8 @@ cc_binary(
         "//src:windows": [],
         "//conditions:default": [
             ":process-tools",
-            ":network-tools",
+            # todo(dslomov)
+            #":network-tools",
         ],
     }),
 )
