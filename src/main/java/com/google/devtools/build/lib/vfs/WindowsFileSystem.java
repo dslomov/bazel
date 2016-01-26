@@ -111,7 +111,7 @@ public class WindowsFileSystem extends JavaIoFileSystem {
     FileStatus status =  new FileStatus() {
       @Override
       public boolean isFile() {
-        return attributes.isRegularFile() || isSpecialFile();
+        return attributes.isRegularFile() || (isSpecialFile() && !isDirectory());
       }
 
       @Override
