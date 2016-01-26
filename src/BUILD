@@ -5,12 +5,13 @@ md5_cmd = "set -e -o pipefail && cat $(SRCS) | sort | %s | awk '{ print $$1; }' 
 # TODO(bazel-team): find a better way to handle dylib extensions.
 filegroup(
     name = "libunix",
-    srcs = select({
-        ":darwin": ["//src/main/native:libunix.dylib"],
-        ":darwin_x86_64": ["//src/main/native:libunix.dylib"],
-        ":windows": [],        
-        "//conditions:default": ["//src/main/native:libunix.so"],
-    }),
+    srcs = [],
+    #srcs = select({
+    #    ":darwin": ["//src/main/native:libunix.dylib"],
+    #    ":darwin_x86_64": ["//src/main/native:libunix.dylib"],
+    #    ":windows": [],
+    #    "//conditions:default": ["//src/main/native:libunix.so"],
+    #}),
     visibility = [
         "//src/test/java:__pkg__",
         "//src/tools/generate_workspace:__pkg__",
@@ -58,7 +59,7 @@ genrule(
           # JAVA_VERSION=$$(echo $${VERSION_LINE} | sed -E 's/.*value="([^"])".*/\\1/');    
     cmd = """
           VERSION_LINE=$$(cat $< | grep target_version);
-          JAVA_VERSION=$$(echo $${VERSION_LINE} | sed 's/.*value="\\([^"]\\)".*/\\1/');
+          JAVA_VERSION='';
           if [ -z "$${JAVA_VERSION}" ]; then
             echo "1.8" >$@  # Java 8 is the default
           elif [[ "$${JAVA_VERSION}" =~ ^[0-9]+$$ ]]; then
@@ -188,6 +189,6 @@ config_setting(
 
 config_setting(
     name = "windows",
-    values = {"compiler": "windows_msys64"},
+    values = {"cpu": "x64_windows"},
     visibility = ["//visibility:public"],
 )

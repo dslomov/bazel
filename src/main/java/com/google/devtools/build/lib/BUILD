@@ -61,7 +61,8 @@ java_library(
     srcs = glob([
         "unix/*.java",
     ]) + ["UnixJniLoader.java"],
-    resources = ["//src/main/native:libunix.so"],
+    # todo(dslomov): proper select
+    resources = [],
     deps = [
         ":common",
         ":shell",

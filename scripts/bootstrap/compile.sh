@@ -216,7 +216,6 @@ cp src/main/tools/xcode_locator_stub.sh ${ARCHIVE_DIR}/_embedded_binaries/xcode-
 function bootstrap_build() {
   "$JAVA_HOME/bin/java" \
       -client -Xms256m -XX:NewRatio=4 -XX:+HeapDumpOnOutOfMemoryError -Xverify:none -Dfile.encoding=ISO-8859-1 \
-      -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005 \
       -XX:HeapDumpPath=${OUTPUT_DIR} \
       -Djava.util.logging.config.file=${OUTPUT_DIR}/javalog.properties \
       -Dio.bazel.UnixFileSystem=0 \
