@@ -16,12 +16,7 @@ package com.google.devtools.build.lib.exec;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.devtools.build.lib.actions.AbstractAction;
-import com.google.devtools.build.lib.actions.ActionExecutionContext;
-import com.google.devtools.build.lib.actions.BaseSpawn;
-import com.google.devtools.build.lib.actions.ExecException;
-import com.google.devtools.build.lib.actions.ResourceManager;
-import com.google.devtools.build.lib.actions.ResourceSet;
+import com.google.devtools.build.lib.actions.*;
 import com.google.devtools.build.lib.analysis.config.BinTools;
 import com.google.devtools.build.lib.analysis.config.BuildConfiguration;
 import com.google.devtools.build.lib.shell.CommandException;
@@ -105,11 +100,12 @@ public final class SymlinkTreeHelper {
    */
   public void createSymlinks(AbstractAction action, ActionExecutionContext actionExecutionContext,
       BinTools binTools) throws ExecException, InterruptedException {
+    Executor executor = actionExecutionContext.getExecutor();
     List<String> args = getSpawnArgumentList(
-        actionExecutionContext.getExecutor().getExecRoot(), binTools);
+        executor.getExecRoot(), binTools);
     try {
       ResourceManager.instance().acquireResources(action, RESOURCE_SET);
-      actionExecutionContext.getExecutor().getSpawnActionContext(action.getMnemonic()).exec(
+      executor.getSpawnActionContext(action.getMnemonic()).exec(
           new BaseSpawn.Local(args, ImmutableMap.<String, String>of(), action),
           actionExecutionContext);
     } finally {
@@ -122,8 +118,14 @@ public final class SymlinkTreeHelper {
    */
   private List<String> getSpawnArgumentList(Path execRoot, BinTools binTools) {
     PathFragment path = binTools.getExecPath(BUILD_RUNFILES);
+    /* HACK */
+    // todo(dslomov): fix
+    String bashPath = System.getenv("BAZEL_SH");
+    if (bashPath == null) bashPath = "/bin/bash";
+
     Preconditions.checkNotNull(path, BUILD_RUNFILES + " not found in embedded tools");
-    List<String> args = Lists.newArrayList(execRoot.getRelative(path).getPathString());
+    List<String> args = Lists.newArrayList(bashPath);
+    args.add((execRoot.getRelative(path).getPathString()));
 
     if (filesetTree) {
       args.add("--allow_relative");
