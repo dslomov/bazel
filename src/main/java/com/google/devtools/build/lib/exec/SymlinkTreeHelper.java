@@ -130,6 +130,11 @@ public final class SymlinkTreeHelper {
   private List<String> getSpawnArgumentList(
       Path execRoot, BinTools binTools, PathFragment shExecutable) {
     PathFragment path = binTools.getExecPath(BUILD_RUNFILES);
+    /* HACK */
+    // todo(dslomov): fix
+    String bashPath = System.getenv("BAZEL_SH");
+    if (bashPath == null) bashPath = "/bin/bash";
+
     Preconditions.checkNotNull(path, BUILD_RUNFILES + " not found in embedded tools");
 
     List<String> args = Lists.newArrayList();
