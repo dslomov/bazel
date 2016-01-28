@@ -21,13 +21,14 @@ cc_library(
             "blaze_util_freebsd.cc",
             "blaze_util_posix.cc",
         ],
-        "//src:windows": [
+        "//conditions:default": [
             "blaze_util_mingw.cc",
         ],
-        "//conditions:default": [
-            "blaze_util_linux.cc",
-            "blaze_util_posix.cc",
-        ],
+        # todo(dslomov): fix
+        #"//conditions:default": [
+        #    "blaze_util_linux.cc",
+        #    "blaze_util_posix.cc",
+        #],
     }),
     hdrs = [
         "blaze_util.h",
