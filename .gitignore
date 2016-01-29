@@ -6,6 +6,7 @@
 /.project
 /.settings
 /WORKSPACE.user.bzl
+/.idea/workspace.xml
 /base_workspace/*
 /bazel-bazel
 /bazel-bin

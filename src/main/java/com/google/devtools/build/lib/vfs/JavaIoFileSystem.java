@@ -310,11 +310,6 @@ public class JavaIoFileSystem extends AbstractFileSystemWithCustomStat {
     synchronized (path) {
       try {
         if (file.delete()) {
-          while (file.exists()) try {
-            Thread.sleep(100);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
           return true;
         }
         if (file.exists()) {

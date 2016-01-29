@@ -129,12 +129,6 @@ public class BlazeJavacMain {
     }
 
     setupBlazeJavaCompiler(context);
-
-    System.out.println("Compiler args:");
-    for (String processedArg : processedArgs) {
-      System.out.println(processedArg);
-    }
-    System.out.println("-=-=-=-=-=-=-=-=-=-");
     return compile(processedArgs, context);
   }
 

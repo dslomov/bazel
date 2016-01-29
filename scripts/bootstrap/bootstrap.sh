@@ -58,33 +58,6 @@ else
   }
 fi
 
-function bazel_bootstrap_old() {
-  local mode=${3:-"0644"}
-  if [[ ! ${BAZEL_SKIP_TOOL_COMPILATION-} =~ "$2" ]]; then
-    log "Building $2"
-    if [ -n "${4-}" ]; then
-      run_silent ${BAZEL} --nomaster_bazelrc --batch --bazelrc=${BAZELRC} \
-          build ${BAZEL_ARGS} --verbose_failures \
-          --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
-          "${EMBED_LABEL_ARG[@]}" $1
-    else
-      run_silent ${BAZEL} --nomaster_bazelrc --bazelrc=${BAZELRC} \
-          build ${BAZEL_ARGS} \
-          --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
-          "${EMBED_LABEL_ARG[@]}" $1
-    fi
-    local file=bazel-bin/${1##//}
-    local filename=$(basename ${file})
-    local extension=${filename##*.}
-
-    if [ "-${extension}" == "-" ]; then
-      file="${file}.exe"
-    fi
-    cp -f ${file/:/\/} $2
-    chmod ${mode} $2
-  fi
-}
-
 function md5_outputs() {
   [ -n "${BAZEL_TEST_XTRACE:-}" ] && set +x  # Avoid garbage in the output
   # runfiles/MANIFEST & runfiles_manifest contain absolute path, ignore.
