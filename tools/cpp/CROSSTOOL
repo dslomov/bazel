@@ -452,7 +452,7 @@ toolchain {
   host_system_name: "local"
   needsPic: false
   target_libc: "local"
-  target_cpu: "k8"
+  target_cpu: "x64_windows"
   target_system_name: "local"
   toolchain_identifier: "local_windows_msys64"
 
