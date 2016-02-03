@@ -27,11 +27,6 @@ std::string GetSelfPath();
 // Returns the directory Bazel can use to store output.
 std::string GetOutputRoot();
 
-
-std::string ConvertPath(const std::string& path);
-
-std::string ListSeparator();
-
 // Returns the process id of the peer connected to this socket.
 pid_t GetPeerProcessId(int socket);
 
