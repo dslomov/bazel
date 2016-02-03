@@ -165,12 +165,18 @@ void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
     }
 
     string arg = s;
+<<<<<<< HEAD
     // Quote quotes.
     if (s.find("\"") != string::npos) {
       ReplaceAll(&arg, "\"", "\\\"");
     }
 
     // Quotize spaces.
+=======
+    if (s.find("\"") != string::npos) {
+      ReplaceAll(&arg, "\"", "\\\"");
+    }
+>>>>>>> Fix for cmdline args
     if (arg.find(" ") != string::npos) {
       cmdline.append("\"");
       cmdline.append(arg);
