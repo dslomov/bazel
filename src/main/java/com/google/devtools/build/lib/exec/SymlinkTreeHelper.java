@@ -136,7 +136,6 @@ public final class SymlinkTreeHelper {
     if (bashPath == null) bashPath = "/bin/bash";
 
     Preconditions.checkNotNull(path, BUILD_RUNFILES + " not found in embedded tools");
-
     List<String> args = Lists.newArrayList();
     if (OS.getCurrent() == OS.WINDOWS) {
       // During bootstrapping, build-runfiles is a shell script, that cannot be directly
