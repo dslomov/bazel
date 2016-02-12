@@ -167,7 +167,6 @@ public class PackageLookupFunction implements SkyFunction {
         return null;
       }
     } catch (NoSuchPackageException | IOException | EvalException e) {
-      e.printStackTrace();
       throw new PackageLookupFunctionException(new BuildFileNotFoundException(id, e.getMessage()),
           Transience.PERSISTENT);
     }
