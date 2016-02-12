@@ -462,7 +462,7 @@ toolchain {
   # used by gcc. That works because bazel currently doesn't track files at
   # absolute locations and has no remote execution, yet. However, this will need
   # to be fixed, maybe with auto-detection?
-  cxx_builtin_include_directory: "C:/msys64/mingw64/"  
+  cxx_builtin_include_directory: "C:/msys64/mingw64/x86_64-w64-mingw32/include"
   tool_path { name: "gcov" path: "C:/msys64/mingw64/bin/gcov" }
   tool_path { name: "ld" path: "C:/msys64/mingw64/bin/ld" }
   tool_path { name: "nm" path: "C:/msys64/mingw64/bin/nm" }
