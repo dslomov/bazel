@@ -20,7 +20,6 @@ import com.google.devtools.build.lib.actions.AbstractAction;
 import com.google.devtools.build.lib.actions.ActionExecutionContext;
 import com.google.devtools.build.lib.actions.BaseSpawn;
 import com.google.devtools.build.lib.actions.ExecException;
-import com.google.devtools.build.lib.actions.Executor;
 import com.google.devtools.build.lib.actions.ResourceManager;
 import com.google.devtools.build.lib.actions.ResourceManager.ResourceHandle;
 import com.google.devtools.build.lib.actions.ResourceSet;
@@ -131,12 +130,8 @@ public final class SymlinkTreeHelper {
   private List<String> getSpawnArgumentList(
       Path execRoot, BinTools binTools, PathFragment shExecutable) {
     PathFragment path = binTools.getExecPath(BUILD_RUNFILES);
-    /* HACK */
-    // todo(dslomov): fix
-    String bashPath = System.getenv("BAZEL_SH");
-    if (bashPath == null) bashPath = "/bin/bash";
-
     Preconditions.checkNotNull(path, BUILD_RUNFILES + " not found in embedded tools");
+
     List<String> args = Lists.newArrayList();
     if (OS.getCurrent() == OS.WINDOWS) {
       // During bootstrapping, build-runfiles is a shell script, that cannot be directly
