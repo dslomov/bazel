@@ -43,8 +43,7 @@ if [ -z "${BAZEL-}" ]; then
                     --verbose_failures \
                     --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
                     "${EMBED_LABEL_ARG[@]}" \
-                    "${@}" \
-    || exit 128
+                    "${@}"
   }
 else
   function bazel_build() {
@@ -53,8 +52,7 @@ else
            --verbose_failures \
            --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
            "${EMBED_LABEL_ARG[@]}" \
-           "${@}" \
-    || exit 128
+           "${@}"
   }
 fi
 
@@ -82,11 +80,6 @@ function bootstrap_test() {
   [ -x "${BAZEL_BIN}" ] || fail "syntax: bootstrap bazel-binary"
   run_silent ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} clean \
       --expunge || return $?
-  echo "Command:"
-  echo ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
-      --fetch --nostamp \
-      --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
-      src:bazel src:tools
   run_silent ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
       ${EXTRA_BAZEL_ARGS-} \
       --fetch --nostamp \
