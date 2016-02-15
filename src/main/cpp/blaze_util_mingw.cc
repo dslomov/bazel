@@ -18,15 +18,12 @@
 #include <sys/cygwin.h>
 #include <sys/socket.h>
 #include <sys/statfs.h>
-#include <sys/cygwin.h>
 #include <unistd.h>
 
 #include <windows.h>
 
 #include <cstdlib>
 #include <cstdio>
-#include <sstream>  // std::to_string
-#include <string>
 
 #include "src/main/cpp/blaze_util.h"
 #include "src/main/cpp/blaze_util_platform.h"
@@ -183,7 +180,7 @@ void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
   // Copy command line into a mutable buffer.
   // CreateProcess is allowed to mutate its command line argument.
   // Max command line length is per CreateProcess documentation
-  // (https://msdn.microsoft.com/en-us/library/ms682425(VS.85).aspx)  
+  // (https://msdn.microsoft.com/en-us/library/ms682425(VS.85).aspx)
   static const int kMaxCmdLineLength = 32768;
   char actual_line[kMaxCmdLineLength];
   if (cmdline.length() >= kMaxCmdLineLength) {
@@ -192,8 +189,6 @@ void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
   strncpy(actual_line, cmdline.c_str(), kMaxCmdLineLength);
   // Add trailing '\0' to be sure.
   actual_line[kMaxCmdLineLength - 1] = '\0';
-
-  //fprintf(stderr, "actual_line = \n%s\n", actual_line);
 
   // Execute program.
   STARTUPINFO startupinfo = {0};
