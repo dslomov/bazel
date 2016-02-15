@@ -53,7 +53,7 @@ function tempdir() {
   local tmp=${TMPDIR:-/tmp}
   local DIR="$(mktemp -d ${tmp%%/}/bazel.XXXXXXXX)"
   mkdir -p "${DIR}"
-  #atexit "rm -fr ${DIR}"
+  atexit "rm -fr ${DIR}"
   NEW_TMPDIR="${DIR}"
 }
 tempdir
