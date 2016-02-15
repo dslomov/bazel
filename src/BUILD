@@ -162,6 +162,7 @@ genrule(
     "_notools",
 ]]
 
+
 # Build an executable named `bazel.exe`.
 # Works on all platforms but only makes sense on Windows.
 # Workaround for non-configurability of genrule's `outs` attribute.

@@ -56,12 +56,10 @@ public class LocalRepositoryFunction extends RepositoryFunction {
       return null;
     }
 
-    /* Temporary ignore this error
-    if (!repositoryValue.isDirectory() && !repositoryValue.isSymlink()) {
+    if (!repositoryValue.isDirectory()) {
       throw new RepositoryFunctionException(
           new IOException(rule + " must specify an existing directory"), Transience.TRANSIENT);
     }
-    */
 
     return RepositoryDirectoryValue.create(outputDirectory);
   }

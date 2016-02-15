@@ -87,6 +87,8 @@ if [[ $PLATFORM == "darwin" ]] && \
 fi
 source scripts/bootstrap/bootstrap.sh
 
+
+
 if [ $DO_COMPILE ]; then
   new_step 'Building Bazel with Bazel'
   display "."
