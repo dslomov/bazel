@@ -146,7 +146,6 @@ static string GetInstallBase(const string &root, const string &self_path) {
   GetInstallKeyFileProcessor processor(&globals->install_md5);
   std::unique_ptr<devtools_ijar::ZipExtractor> extractor(
       devtools_ijar::ZipExtractor::Create(self_path.c_str(), &processor));
-  fprintf(stderr, "Here: %s\n", self_path.c_str());
   if (extractor.get() == NULL) {
     die(blaze_exit_code::LOCAL_ENVIRONMENTAL_ERROR,
         "\nFailed to open %s as a zip file: (%d) %s",
