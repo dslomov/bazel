@@ -171,6 +171,7 @@ public class BaseJavaCompilationHelper {
       ruleContext.registerAction(new SpawnAction.Builder()
           .addInput(inputJar)
           .addOutput(interfaceJar)
+          .useDefaultShellEnvironment()
           .setExecutable(ijarTarget)
           .addArgument(inputJar.getExecPathString())
           .addArgument(interfaceJar.getExecPathString())
