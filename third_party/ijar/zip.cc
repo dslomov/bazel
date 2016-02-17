@@ -35,11 +35,6 @@
 #include <limits.h>
 #include <limits>
 #include <vector>
-#include <string>
-
-#include <windows.h>
-
-#include <io.h>
 
 #include "third_party/ijar/mapped_file.h"
 #include "third_party/ijar/zip.h"
@@ -222,11 +217,7 @@ class OutputZipFile : public ZipBuilder {
     return errmsg;
   }
 
-  virtual ~OutputZipFile() { 
-    fprintf(stderr, "Destructor before Finish\n");
-    Finish(); 
-    fprintf(stderr, "Destructor after Finish\n");
-  }
+  virtual ~OutputZipFile() { Finish(); }
   virtual u1* NewFile(const char* filename, const u4 attr);
   virtual int FinishFile(size_t filelength, bool compress = false,
                          bool compute_crc = false);

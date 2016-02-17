@@ -92,8 +92,6 @@ void OpenFilesAndProcessJar(const char *file_out, const char *file_in) {
     abort();
   }
   u8 output_length = in->CalculateOutputLength();
-  
-  {
   std::unique_ptr<ZipBuilder> out(ZipBuilder::Create(file_out, output_length));
   if (out.get() == NULL) {
     fprintf(stderr, "Unable to open output file %s: %s\n", file_out,
@@ -117,20 +115,14 @@ void OpenFilesAndProcessJar(const char *file_out, const char *file_in) {
     fprintf(stderr, "%s\n", out->GetError());
     abort();
   }
-  fprintf(stderr, "After out->Finish()\n");
   // Get all file size
   size_t in_length = in->GetSize();
   size_t out_length = out->GetSize();
-
-  
   if (verbose) {
     fprintf(stderr, "INFO: produced interface jar: %s -> %s (%d%%).\n",
             file_in, file_out,
             static_cast<int>(100.0 * out_length / in_length));
   }
-  }
-
-  fprintf(stderr, "End of OpenFilesAndProcessJar\n");
 }
 
 }  // namespace devtools_ijar
@@ -184,6 +176,5 @@ int main(int argc, char **argv) {
   }
 
   devtools_ijar::OpenFilesAndProcessJar(filename_out, filename_in);
-  fprintf(stderr, "Before return 0\n");
   return 0;
 }
