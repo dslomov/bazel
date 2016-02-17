@@ -55,10 +55,10 @@ genrule(
     name = "java-version",
     srcs = [":java_toolchain_content"],
     outs = ["java.version"],
-          # JAVA_VERSION=$$(echo $${VERSION_LINE} | sed -E 's/.*value="([^"])".*/\\1/');    
+          # JAVA_VERSION=$$(echo $${VERSION_LINE} | sed -E 's/.*value="([^"])".*/\\1/');
     cmd = """
           VERSION_LINE=$$(cat $< | grep target_version);
-          JAVA_VERSION='';
+          JAVA_VERSION=$$(echo $${VERSION_LINE} | sed 's/.*value=\\"\\([^\\"]\\).*/\\1/');
           if [ -z "$${JAVA_VERSION}" ]; then
             echo "1.8" >$@  # Java 8 is the default
           elif [[ "$${JAVA_VERSION}" =~ ^[0-9]+$$ ]]; then

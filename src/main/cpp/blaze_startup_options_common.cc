@@ -42,7 +42,12 @@ void BlazeStartupOptions::Init() {
   block_for_lock = true;
   host_jvm_debug = false;
   host_javabase = "";
+#ifndef __CYGWIN__
+  #error No win32
   batch = false;
+#else
+  batch = true;
+#endif
   batch_cpu_scheduling = false;
   allow_configurable_attributes = false;
   fatal_event_bus_exceptions = false;
