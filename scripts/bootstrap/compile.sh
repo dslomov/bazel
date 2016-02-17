@@ -227,7 +227,5 @@ function bootstrap_build() {
       --rc_source=/dev/null --isatty=1 --terminal_columns=97 \
       --ignore_client_env \
       --client_cwd=${PWD} \
-      --spawn_strategy=standalone --verbose_failures \
-      "${@}" \
-  || exit 128
+      "${@}"
 }
