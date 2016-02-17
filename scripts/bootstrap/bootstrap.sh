@@ -34,6 +34,7 @@ fi
       --javabuilder_top=//src/java_tools/buildjar:bootstrap_deploy.jar \
       --genclass_top=//src/java_tools/buildjar:bootstrap_genclass_deploy.jar \
       --ijar_top=//third_party/ijar \
+      --strategy=Javac=worker --worker_quit_after_build \
       --genrule_strategy=standalone --spawn_strategy=standalone \
       "${EXTRA_BAZEL_ARGS:-}"}
 
@@ -82,6 +83,7 @@ function bootstrap_test() {
       --expunge || return $?
   run_silent ${BAZEL_BIN} --nomaster_bazelrc --bazelrc=${BAZELRC} build \
       ${EXTRA_BAZEL_ARGS-} \
+      --strategy=Javac=worker --worker_quit_after_build \
       --fetch --nostamp \
       --javacopt="-source ${JAVA_VERSION} -target ${JAVA_VERSION}" \
       ${BAZEL_TARGET} || return $?
