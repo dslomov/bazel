@@ -106,6 +106,9 @@ string GetJvmVersion(const string &java_exe);
 bool CheckJavaVersionIsAtLeast(const string &jvm_version,
                                const string &version_spec);
 
+
+bool Symlink(const string &target, const string &link);
+
 // Converts a project identifier to string.
 // Workaround for mingw where std::to_string is not implemented.
 // See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52015.

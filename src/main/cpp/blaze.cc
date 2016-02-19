@@ -1016,8 +1016,7 @@ static void EnsureCorrectRunningVersion() {
       globals->restart_reason = NEW_VERSION;
     }
     unlink(installation_path.c_str());
-    if (symlink(globals->options.install_base.c_str(),
-                installation_path.c_str())) {
+    if (!Symlink(globals->options.install_base, installation_path)) {
       printf("failed to create installation symlink '%s' - ignored",
            installation_path.c_str());
       return;

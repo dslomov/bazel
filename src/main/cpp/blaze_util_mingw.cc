@@ -115,12 +115,10 @@ void ReplaceAll(
     pos += with.length();
   }
 }
-}  // namespace
 
-// Replace the current process with the given program in the given working
+// Run the given program in the given working
 // directory, using the given argument vector.
-// This function does not return on success.
-void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
+DWORD CreateProcessWrapper(const string& exe, const vector<string>& args_vector) {
   if (VerboseLogging()) {
     string dbg;
     for (const auto& s : args_vector) {
@@ -187,6 +185,8 @@ void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
   STARTUPINFO startupinfo = {0};
   PROCESS_INFORMATION pi = {0};
 
+  fprintf(stderr, "%s", actual_line);
+
   // Propagate BAZEL_SH environment variable to a sub-process.
   // todo(dslomov): More principled approach to propagating
   // environment variables.
@@ -212,9 +212,17 @@ void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
   GetExitCodeProcess(pi.hProcess, &exit_code);
   CloseHandle(pi.hProcess);
   CloseHandle(pi.hThread);
+  fprintf(stderr, "exit_code = %d\n", exit_code);
+  return exit_code;
+}
+}  // namespace
 
+// Replace the current process with the given program in the given working
+// directory, using the given argument vector.
+// This function does not return on success.
+void ExecuteProgram(const string& exe, const vector<string>& args_vector) {
   // Emulate execv.
-  exit(exit_code);
+  exit(CreateProcessWrapper(exe, args_vector));
 }
 
 string ListSeparator() { return ";"; }
@@ -225,6 +233,19 @@ string ConvertPath(const string& path) {
   string result(wpath);
   free(wpath);
   return result;
+}
+
+bool Symlink(const string &target, const string &link) {
+  const string target_win = ConvertPath(target);
+  const string link_win = ConvertPath(link);
+  vector<string> args;
+  args.push_back("cmd");
+  args.push_back("/C");
+  args.push_back("mklink");
+  args.push_back("/J");
+  args.push_back(link_win);
+  args.push_back(target_win);
+  return CreateProcessWrapper("cmd", args) == 0;
 }
 
 }  // namespace blaze
