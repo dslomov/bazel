@@ -43,6 +43,7 @@
 
 #define _FILE_OFFSET_BITS 64
 
+#include <algorithm>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -55,6 +56,13 @@
 
 #include <map>
 #include <string>
+
+#ifdef __CYGWIN__
+#include <locale>
+#include <codecvt>
+#define _WIN32_WINNT 0x0701
+#include <windows.h>
+#endif
 
 // program_invocation_short_name is not portable.
 static const char *argv0;
@@ -108,6 +116,32 @@ struct FileInfo {
 };
 
 typedef std::map<std::string, FileInfo> FileInfoMap;
+
+#ifdef __CYGWIN__
+void DieWithWindowsError(const std::string& op) {
+  DWORD last_error = ::GetLastError();
+  if (last_error == 0) {
+      return;
+  }
+
+  char* message_buffer;
+  size_t size = FormatMessageA(
+      FORMAT_MESSAGE_ALLOCATE_BUFFER
+          | FORMAT_MESSAGE_FROM_SYSTEM
+          | FORMAT_MESSAGE_IGNORE_INSERTS,
+      NULL,
+      last_error,
+      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      (LPSTR) &message_buffer,
+      0,
+      NULL);
+
+  fprintf(stderr, "ERROR: %s: %s (%d)\n",
+          op.c_str(), message_buffer, last_error);
+  LocalFree(message_buffer);
+  exit(1);
+}
+#endif
 
 class RunfilesCreator {
  public:
@@ -219,7 +253,66 @@ class RunfilesCreator {
   }
 
  private:
-  void SetupOutputBase() {
+#ifdef __CYGWIN__  
+  // Move the given path to a "trash" directory. The path can be either
+  // directory or a file.  
+  void MoveToTrash(const std::string& path) {
+    static const char* trash_directory_name = "bazel-trash";
+    struct stat st;
+    if (stat(trash_directory_name, &st) != 0) {
+      if (mkdir(trash_directory_name, 0777) != 0) {
+        PDIE("creating '%s'", trash_directory_name);
+      }
+    }
+    bool success = false;
+
+    TCHAR full_path[MAX_PATH]; 
+    if (!::GetFullPathName(path.c_str(), MAX_PATH, full_path, NULL)) {
+      DieWithWindowsError("GetFullPathName");
+    }
+
+    std::string unc_full_path = std::string("\\\\?\\") + std::string(full_path);
+
+    // Attempt to generate unique name and move the file/directory.
+    // If move fails because the target exists, then we are racing 
+    // with ourselves - generate a new name and retry.
+    for (int attempts = 3; attempts > 0; attempts--) {
+      TCHAR temp_trash_name[MAX_PATH + 1];
+
+      snprintf(temp_trash_name, MAX_PATH, 
+        // The name has a current time and a rand component.
+        // ::GetTickCount() has 10-20ms resolution.
+        // If we are racing with ourselves within that timeslice,
+        // continuous iterations of rand() ensure progress.  
+        "%s/%u%d", trash_directory_name, ::GetTickCount(), rand() % 0xFFFF);
+      TCHAR full_temp_trash_name[MAX_PATH + 1];
+      if (!::GetFullPathName(temp_trash_name, MAX_PATH, full_temp_trash_name, NULL)) {
+        DieWithWindowsError("GetFullPathName");
+      }       
+      std::string unc_full_trash_name = std::string("\\\\?\\") + std::string(full_temp_trash_name);
+
+      if (::MoveFileEx(unc_full_path.c_str(), unc_full_trash_name.c_str(), MOVEFILE_WRITE_THROUGH)) {
+        success = true;
+        break;
+      }
+
+      if (ERROR_FILE_EXISTS != ::GetLastError() && ERROR_ACCESS_DENIED != ::GetLastError()) {
+        fprintf(stderr, "%lu: %lu Moving %s to %s\n", ::GetCurrentProcessId(), ::GetLastError(),
+                unc_full_path.c_str(), unc_full_trash_name.c_str());
+        exit(1);
+
+        DieWithWindowsError("MoveFileEx");
+        return;
+      }           
+    }
+    if (!success) {
+      DieWithWindowsError("MoveFileEx after 3 attempts");
+    }    
+  }
+
+#endif
+
+  void SetupOutputBase() {    
     struct stat st;
     if (stat(output_base_.c_str(), &st) != 0) {
       // Technically, this will cause problems if the user's umask contains
@@ -231,6 +324,61 @@ class RunfilesCreator {
       EnsureDirReadAndWritePerms(output_base_);
     }
   }
+
+#ifdef __CYGWIN__
+  bool CheckIfHardlinkPointsTo(const std::string& path, const std::string& target) {
+    fprintf(stderr, "Trying:%s '%s'\n", path.c_str(), target.c_str());
+    //std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t>> converter;
+    std::wstring wpath(path.begin(), path.end());
+    std::wstring wtarget(target.begin(), target.end());
+
+    //fprintf(stderr, "wpath = %s\n", converter.to_bytes(wpath).c_str());
+    wchar_t full_path[MAX_PATH]; 
+    if (!GetFullPathNameW(wpath.c_str(), MAX_PATH, full_path, NULL)) {
+      DieWithWindowsError(std::string("GetFullPathName:" ) + path);
+    }
+    //fprintf(stderr, "full_path = %s\n", converter.to_bytes(full_path).c_str());
+
+
+    WCHAR search_result_buffer[PATH_MAX];
+    DWORD buffer_len = ARRAYSIZE(search_result_buffer);
+    HANDLE hFind = FindFirstFileNameW(full_path, 0, &buffer_len, search_result_buffer);
+    if (hFind == INVALID_HANDLE_VALUE) {
+      fwprintf(stderr, L"%s\n", full_path);
+      DieWithWindowsError(std::string("FindFirstFileNameW: ") + path);
+    }
+
+    wchar_t volume_root[MAX_PATH];
+    if (!::GetVolumePathNameW(wpath.c_str(), volume_root, ARRAYSIZE(volume_root))) {
+      DieWithWindowsError("GetVolumePathName");
+    }
+    if (volume_root[wcslen(volume_root) - 1] == L'\\') {
+      volume_root[wcslen(volume_root) - 1] = L'\0';
+    }
+    std::wstring wvolume_root(volume_root);
+    std::string normalized_target = target;
+    std::replace(normalized_target.begin(), normalized_target.end(), '/', '\\');
+    while(true) {
+      std::wstring wresult = wvolume_root + std::wstring(search_result_buffer);
+      std::string result(wresult.begin(), wresult.end());
+      fprintf(stderr, "result:%s\ntarget:%s\n", result.c_str(), normalized_target.c_str());
+      if (result == normalized_target) {
+        fprintf(stderr, "Found!\n");
+        //return true;
+      }
+      buffer_len = ARRAYSIZE(search_result_buffer);
+      if (!FindNextFileNameW(hFind, &buffer_len, search_result_buffer)) {
+        if (ERROR_HANDLE_EOF == ::GetLastError()) {
+          fprintf(stderr, "Not found!\n");
+          FindClose(hFind);
+          return false;
+        }
+        DieWithWindowsError(std::string("FindNextFileNameW: ") + path);
+      } 
+    }
+  }
+#endif  
+
 
   void ScanTreeAndPrune(const std::string &path) {
     // A note on non-empty files:
@@ -260,13 +408,30 @@ class RunfilesCreator {
       }
 
       FileInfoMap::iterator expected_it = manifest_.find(entry_path);
+      
+#ifdef __CYGWIN__
+      bool already_correct;
+      if (expected_it == manifest_.end()) {
+        already_correct = false;
+      } else {
+        if (expected_it->second.type == FILE_TYPE_SYMLINK) {
+          already_correct = CheckIfHardlinkPointsTo(entry_path, expected_it->second.symlink_target);
+        } else {
+          already_correct = actual_info.type == expected_it->second.type;
+        }
+      }
+#else
+      bool already_correct =
+       expected_it != manifest_.end() && expected_it->second == actual_info;
+#endif
+      
+
       // When windows_compatible is enabled, if the hard link already existing
       // is still
       // in the mainifest, no need to recreate it.
       // Note: here we assume the content won't change, which might not be true
       // in some rare cases.
-      if (expected_it == manifest_.end() ||
-          (!windows_compatible_ && expected_it->second != actual_info)) {
+      if (!already_correct) {
         DelTree(entry_path, actual_info.type);
       } else {
         manifest_.erase(expected_it);
@@ -389,7 +554,11 @@ class RunfilesCreator {
   void DelTree(const std::string &path, FileType file_type) {
     if (file_type != FILE_TYPE_DIRECTORY) {
       if (unlink(path.c_str()) != 0) {
+#ifdef __CYGWIN__        
+        MoveToTrash(path);
+#else
         PDIE("unlinking '%s'", path.c_str());
+#endif        
       }
       return;
     }
@@ -428,6 +597,7 @@ class RunfilesCreator {
 };
 
 int main(int argc, char **argv) {
+  srand(time(NULL));
   argv0 = argv[0];
 
   argc--; argv++;
