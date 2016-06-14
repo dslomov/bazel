@@ -207,8 +207,8 @@ class RunfilesCreator {
            output_filename_.c_str());
     }
 
-    ScanTreeAndPrune(".");
-    CreateFiles();
+    //ScanTreeAndPrune(".");
+    //CreateFiles();
 
     // rename output file into place
     if (rename(temp_filename_.c_str(), output_filename_.c_str()) != 0) {

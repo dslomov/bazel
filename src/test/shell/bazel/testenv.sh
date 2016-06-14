@@ -21,24 +21,24 @@
 BAZEL_RUNFILES="$TEST_SRCDIR/io_bazel"
 
 # Load the unit-testing framework
-source "${BAZEL_RUNFILES}/src/test/shell/unittest.bash" || \
+source "$(rlocation io_bazel/src/test/shell/unittest.bash)" || \
   { echo "Failed to source unittest.bash" >&2; exit 1; }
 
 # WORKSPACE file
 workspace_file="${BAZEL_RUNFILES}/WORKSPACE"
 
 # Bazel
-bazel_tree="${BAZEL_RUNFILES}/src/test/shell/bazel/doc-srcs.zip"
-bazel="${BAZEL_RUNFILES}/src/bazel"
+bazel_tree="$(rlocation io_bazel/src/test/shell/bazel/doc-srcs.zip)"
+bazel="$(rlocation io_bazel/src/bazel)"
 bazel_data="${BAZEL_RUNFILES}"
 
 # Java
-jdk_dir="${TEST_SRCDIR}/local_jdk"
-langtools="${BAZEL_RUNFILES}/src/test/shell/bazel/langtools.jar"
+jdk_dir="$(cygpath -m $(cd $(rlocation local_jdk/bin/java.exe)/../..; pwd))"
+langtools="$(rlocation io_bazel/src/test/shell/bazel/langtools.jar)"
 
 # Tools directory location
-tools_dir="${BAZEL_RUNFILES}/tools"
-langtools_dir="${BAZEL_RUNFILES}/third_party/java/jdk/langtools"
+tools_dir=$(dirname "$(rlocation io_bazel/tools/BUILD)")
+langtools_dir="$(dirname $(rlocation io_bazel/third_party/java/jdk/langtools/BUILD))"
 EXTRA_BAZELRC="build --ios_sdk_version=8.4"
 
 # Java tooling
@@ -152,7 +152,7 @@ function is_tools_directory() {
 
 # Copy the examples of the base workspace
 function copy_examples() {
-  EXAMPLE="$BAZEL_RUNFILES/examples"
+  EXAMPLE="$(cd $(rlocation io_bazel/examples/cpp/BUILD)/../../; pwd)"
   cp -RL ${EXAMPLE} .
   chmod -R +w .
 }

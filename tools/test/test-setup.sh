@@ -28,11 +28,21 @@ fi
 export GTEST_TMP_DIR="${TEST_TMPDIR}"
 
 DIR="$TEST_SRCDIR"
+MANIFEST_FILE="${DIR}/MANIFEST"
 
 if [ ! -z "$TEST_WORKSPACE" ]
 then
   DIR="$DIR"/"$TEST_WORKSPACE"
 fi
+
+
+
+function rlocation() {
+  echo $(grep "^$1 " $MANIFEST_FILE | awk '{ print $2 }')
+}
+
+export MANIFEST_FILE
+export -f rlocation
 
 # normal commands are run in the exec-root where they have access to
 # the entire source tree. By chdir'ing to the runfiles root, tests only
@@ -49,7 +59,8 @@ echo "--------------------------------------------------------------------------
 PATH=".:$PATH"
 
 exitCode=0
-"$@" || exitCode=$?
+echo "$(rlocation $TEST_WORKSPACE/$1)"
+"$(rlocation $TEST_WORKSPACE/$1)" "$2" || exitCode=$?
 
 if [ -n "${XML_OUTPUT_FILE-}" -a ! -f "${XML_OUTPUT_FILE-}" ]; then
   # Create a default XML output file if the test runner hasn't generated it
