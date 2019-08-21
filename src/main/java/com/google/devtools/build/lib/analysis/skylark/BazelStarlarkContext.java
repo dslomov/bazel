@@ -17,6 +17,7 @@ package com.google.devtools.build.lib.analysis.skylark;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.devtools.build.lib.analysis.RuleDefinitionContext;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.cmdline.RepositoryName;
 import com.google.devtools.build.lib.skylarkinterface.StarlarkContext;
 import java.util.Objects;
@@ -26,7 +27,7 @@ import javax.annotation.Nullable;
 public class BazelStarlarkContext implements StarlarkContext, RuleDefinitionContext {
   private final String toolsRepository;
   @Nullable private final ImmutableMap<String, Class<?>> fragmentNameToClass;
-  private final ImmutableMap<RepositoryName, RepositoryName> repoMapping;
+  private final RepoMapping repoMapping;
   private final SymbolGenerator<?> symbolGenerator;
 
   /**
@@ -40,7 +41,7 @@ public class BazelStarlarkContext implements StarlarkContext, RuleDefinitionCont
   public BazelStarlarkContext(
       String toolsRepository,
       ImmutableMap<String, Class<?>> fragmentNameToClass,
-      ImmutableMap<RepositoryName, RepositoryName> repoMapping,
+      RepoMapping repoMapping,
       SymbolGenerator<?> symbolGenerator) {
     this.toolsRepository = toolsRepository;
     this.fragmentNameToClass = fragmentNameToClass;
@@ -56,7 +57,7 @@ public class BazelStarlarkContext implements StarlarkContext, RuleDefinitionCont
    */
   public BazelStarlarkContext(
       String toolsRepository,
-      ImmutableMap<RepositoryName, RepositoryName> repoMapping,
+      RepoMapping repoMapping,
       SymbolGenerator<?> symbolGenerator) {
     this(toolsRepository, null, repoMapping, symbolGenerator);
   }
@@ -96,7 +97,7 @@ public class BazelStarlarkContext implements StarlarkContext, RuleDefinitionCont
    * written in the BUILD files and the values are new repository names chosen by the main
    * repository.
    */
-  public ImmutableMap<RepositoryName, RepositoryName> getRepoMapping() {
+  public RepoMapping getRepoMapping() {
     return repoMapping;
   }
 

@@ -30,6 +30,7 @@ import com.google.devtools.build.lib.cmdline.Label;
 import com.google.devtools.build.lib.cmdline.LabelConstants;
 import com.google.devtools.build.lib.cmdline.LabelSyntaxException;
 import com.google.devtools.build.lib.cmdline.PackageIdentifier;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.cmdline.RepositoryName;
 import com.google.devtools.build.lib.collect.CollectionUtils;
 import com.google.devtools.build.lib.collect.ImmutableSortedKeyMap;
@@ -192,14 +193,14 @@ public class Package {
    * For example, an entry of {"@foo" : {"@x", "@y"}} indicates that, within repository foo,
    * "@x" should be remapped to "@y".
    */
-  private ImmutableMap<RepositoryName, ImmutableMap<RepositoryName, RepositoryName>>
+  private ImmutableMap<RepositoryName, RepoMapping>
       externalPackageRepositoryMappings;
 
   /**
    * The map of repository reassignments for BUILD packages. This will be empty for packages
    * within the main workspace.
    */
-  private ImmutableMap<RepositoryName, RepositoryName> repositoryMapping;
+  private RepoMapping repositoryMapping;
 
   /**
    * The names of the package() attributes that declare default values for rule
@@ -250,17 +251,17 @@ public class Package {
    * @throws UnsupportedOperationException if called from a package other than
    *     the //external package
    */
-  public ImmutableMap<RepositoryName, RepositoryName> getRepositoryMapping(
+  public RepoMapping getRepositoryMapping(
       RepositoryName repository) {
     if (!packageIdentifier.equals(LabelConstants.EXTERNAL_PACKAGE_IDENTIFIER)) {
       throw new UnsupportedOperationException("Can only access the external package repository"
           + "mappings from the //external package");
     }
-    return externalPackageRepositoryMappings.getOrDefault(repository, ImmutableMap.of());
+    return externalPackageRepositoryMappings.getOrDefault(repository, RepoMapping.EMPTY);
   }
 
   /** Get the repository mapping for this package. */
-  public ImmutableMap<RepositoryName, RepositoryName> getRepositoryMapping() {
+  public RepoMapping getRepositoryMapping() {
     return repositoryMapping;
   }
 
@@ -270,7 +271,7 @@ public class Package {
    * @throws UnsupportedOperationException if called from a package other than the //external
    *     package
    */
-  public ImmutableMap<RepositoryName, ImmutableMap<RepositoryName, RepositoryName>>
+  public ImmutableMap<RepositoryName, RepoMapping>
       getExternalPackageRepositoryMappings() {
     if (!packageIdentifier.equals(LabelConstants.EXTERNAL_PACKAGE_IDENTIFIER)) {
       throw new UnsupportedOperationException(
@@ -409,7 +410,7 @@ public class Package {
     this.registeredExecutionPlatforms = ImmutableList.copyOf(builder.registeredExecutionPlatforms);
     this.registeredToolchains = ImmutableList.copyOf(builder.registeredToolchains);
     this.repositoryMapping = Preconditions.checkNotNull(builder.repositoryMapping);
-    ImmutableMap.Builder<RepositoryName, ImmutableMap<RepositoryName, RepositoryName>>
+    ImmutableMap.Builder<RepositoryName, RepoMapping>
         repositoryMappingsBuilder = ImmutableMap.builder();
     if (!builder.externalPackageRepositoryMappings.isEmpty() && !builder.isWorkspace()) {
       // 'repo_mapping' should only be used in the //external package, i.e. should only appear
@@ -420,7 +421,7 @@ public class Package {
           "'repo_mapping' may only be used in the //external package");
     }
     builder.externalPackageRepositoryMappings.forEach((k, v) ->
-        repositoryMappingsBuilder.put(k, ImmutableMap.copyOf(v)));
+        repositoryMappingsBuilder.put(k, new RepoMapping(ImmutableMap.copyOf(v))));
     this.externalPackageRepositoryMappings = repositoryMappingsBuilder.build();
   }
 
@@ -811,7 +812,7 @@ public class Package {
     // The map of repository reassignments for BUILD packages loaded within external repositories.
     // It contains an entry from "@<main workspace name>" to "@" for packages within
     // the main workspace.
-    private ImmutableMap<RepositoryName, RepositoryName> repositoryMapping = ImmutableMap.of();
+    private RepoMapping repositoryMapping = RepoMapping.EMPTY;
     private RootedPath filename = null;
     private Label buildFileLabel = null;
     private InputFile buildFile = null;
@@ -928,9 +929,9 @@ public class Package {
 
     /** Adds all the mappings from a given {@link Package}. */
     Builder addRepositoryMappings(Package aPackage) {
-      ImmutableMap<RepositoryName, ImmutableMap<RepositoryName, RepositoryName>>
+      ImmutableMap<RepositoryName, RepoMapping>
           repositoryMappings = aPackage.externalPackageRepositoryMappings;
-      for (Map.Entry<RepositoryName, ImmutableMap<RepositoryName, RepositoryName>> repositoryName :
+      for (Map.Entry<RepositoryName, RepoMapping> repositoryName :
           repositoryMappings.entrySet()) {
         for (Map.Entry<RepositoryName, RepositoryName> repositoryNameRepositoryNameEntry :
             repositoryName.getValue().entrySet()) {
@@ -947,13 +948,13 @@ public class Package {
      * Sets the repository mapping for a regular, BUILD file package (i.e. not the //external
      * package)
      */
-    Builder setRepositoryMapping(ImmutableMap<RepositoryName, RepositoryName> repositoryMapping) {
+    Builder setRepositoryMapping(RepoMapping repositoryMapping) {
       this.repositoryMapping = Preconditions.checkNotNull(repositoryMapping);
       return this;
     }
 
     /** Get the repository mapping for this package */
-    ImmutableMap<RepositoryName, RepositoryName> getRepositoryMapping() {
+    RepoMapping getRepositoryMapping() {
       return this.repositoryMapping;
     }
 

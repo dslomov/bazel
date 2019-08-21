@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.devtools.build.lib.cmdline.Label;
 import com.google.devtools.build.lib.cmdline.LabelSyntaxException;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.events.Location;
 import com.google.devtools.build.lib.skylarkbuildapi.FileApi;
 import com.google.devtools.build.lib.skylarkbuildapi.ProviderApi;
@@ -184,7 +185,7 @@ public class FakeSkylarkRuleFunctionsApi implements SkylarkRuleFunctionsApi<File
       return Label.parseAbsolute(
           labelString,
           /* defaultToMain= */ false,
-          /* repositoryMapping= */ ImmutableMap.of());
+          /* repositoryMapping= */ RepoMapping.EMPTY);
     } catch (LabelSyntaxException e) {
       throw new EvalException(loc, "Illegal absolute label syntax: " + labelString);
     }

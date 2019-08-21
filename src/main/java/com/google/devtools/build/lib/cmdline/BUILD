@@ -39,6 +39,7 @@ java_library(
         "LabelSyntaxException.java",
         "LabelValidator.java",
         "PackageIdentifier.java",
+        "RepoMapping.java",
         "RepositoryName.java",
     ],
     visibility = ["//src:__subpackages__"],

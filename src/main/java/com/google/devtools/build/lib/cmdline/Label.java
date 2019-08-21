@@ -102,7 +102,7 @@ public final class Label
    *     repository to the global name declared in the main repository
    */
   public static Label parseAbsolute(
-      String absName, ImmutableMap<RepositoryName, RepositoryName> repositoryMapping)
+      String absName, RepoMapping repositoryMapping)
       throws LabelSyntaxException {
     return parseAbsolute(
         absName, /* defaultToMain= */ true, repositoryMapping);
@@ -132,7 +132,7 @@ public final class Label
   public static Label parseAbsolute(
       String absName,
       boolean defaultToMain,
-      ImmutableMap<RepositoryName, RepositoryName> repositoryMapping)
+      RepoMapping repositoryMapping)
       throws LabelSyntaxException {
     Preconditions.checkNotNull(repositoryMapping);
     String repo = defaultToMain ? "@" : RepositoryName.DEFAULT_REPOSITORY;
@@ -166,7 +166,7 @@ public final class Label
   }
 
   private static RepositoryName getGlobalRepoName(
-      String repo, ImmutableMap<RepositoryName, RepositoryName> repositoryMapping)
+      String repo, RepoMapping repositoryMapping)
       throws LabelSyntaxException {
     Preconditions.checkNotNull(repositoryMapping);
     RepositoryName repoName = RepositoryName.create(repo);
@@ -184,7 +184,7 @@ public final class Label
   // TODO(b/110698008): create parseAbsoluteUnchecked that passes repositoryMapping
   public static Label parseAbsoluteUnchecked(String absName, boolean defaultToMain) {
     try {
-      return parseAbsolute(absName, defaultToMain, /* repositoryMapping= */ ImmutableMap.of());
+      return parseAbsolute(absName, defaultToMain, /* repositoryMapping= */ RepoMapping.EMPTY);
     } catch (LabelSyntaxException e) {
       throw new IllegalArgumentException(e);
     }
@@ -251,7 +251,7 @@ public final class Label
       throws LabelSyntaxException {
     Preconditions.checkArgument(!workspaceRelativePath.isAbsolute());
     if (LabelValidator.isAbsolute(label)) {
-      return parseAbsolute(label, ImmutableMap.of());
+      return parseAbsolute(label, RepoMapping.EMPTY);
     }
     int index = label.indexOf(':');
     if (index < 0) {
@@ -300,7 +300,7 @@ public final class Label
       String packageIdentifier,
       String name,
       String repo,
-      ImmutableMap<RepositoryName, RepositoryName> repositoryMapping)
+      RepoMapping repositoryMapping)
       throws LabelSyntaxException {
     String error = null;
     try {
@@ -558,7 +558,7 @@ public final class Label
    *     repository names in main repo; can be empty, but not null
    */
   public Label getRelativeWithRemapping(
-      String relName, ImmutableMap<RepositoryName, RepositoryName> repositoryMapping)
+      String relName, RepoMapping repositoryMapping)
       throws LabelSyntaxException {
     Preconditions.checkNotNull(repositoryMapping);
     if (relName.length() == 0) {

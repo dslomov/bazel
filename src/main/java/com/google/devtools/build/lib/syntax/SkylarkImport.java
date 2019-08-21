@@ -20,6 +20,7 @@ import com.google.devtools.build.lib.cmdline.LabelConstants;
 import com.google.devtools.build.lib.cmdline.LabelSyntaxException;
 import com.google.devtools.build.lib.cmdline.LabelValidator;
 import com.google.devtools.build.lib.cmdline.PackageIdentifier;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.cmdline.RepositoryName;
 import com.google.devtools.build.lib.skyframe.serialization.autocodec.AutoCodec;
 import com.google.devtools.build.lib.skyframe.serialization.autocodec.AutoCodec.VisibleForSerialization;
@@ -62,7 +63,7 @@ public class SkylarkImport {
     // within the package.
     try {
       // This is for imports relative to the current repository, so repositoryMapping can be empty
-      return containingFileLabel.getRelativeWithRemapping(getImportString(), ImmutableMap.of());
+      return containingFileLabel.getRelativeWithRemapping(getImportString(), RepoMapping.EMPTY);
     } catch (LabelSyntaxException e) {
       // shouldn't happen because the parent label is assumed validated and the target string is
       // validated on construction
@@ -136,7 +137,7 @@ public class SkylarkImport {
    * @throws SkylarkImportSyntaxException if the string is not a valid Skylark import.
    */
   public static SkylarkImport create(
-      String importString, ImmutableMap<RepositoryName, RepositoryName> repositoryMapping)
+      String importString, RepoMapping repositoryMapping)
       throws SkylarkImportSyntaxException {
     if (!importString.endsWith(".bzl")) {
       throw new SkylarkImportSyntaxException(MUST_HAVE_BZL_EXT_MSG);

@@ -124,7 +124,7 @@ public final class PackageIdentifier
   }
 
   public static PackageIdentifier parse(
-      String input, String repo, ImmutableMap<RepositoryName, RepositoryName> repositoryMapping)
+      String input, String repo, RepoMapping repositoryMapping)
       throws LabelSyntaxException {
     String packageName;
     int packageStartPos = input.indexOf("//");

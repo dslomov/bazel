@@ -41,7 +41,7 @@ import com.google.devtools.build.lib.analysis.skylark.SymbolGenerator;
 import com.google.devtools.build.lib.cmdline.Label;
 import com.google.devtools.build.lib.cmdline.LabelSyntaxException;
 import com.google.devtools.build.lib.cmdline.PackageIdentifier;
-import com.google.devtools.build.lib.cmdline.RepositoryName;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.events.EventHandler;
 import com.google.devtools.build.lib.graph.Digraph;
 import com.google.devtools.build.lib.graph.Node;
@@ -289,7 +289,7 @@ public class ConfiguredRuleClassProvider implements RuleClassProvider {
 
     public Builder setPrelude(String preludeLabelString) {
       try {
-        this.preludeLabel = Label.parseAbsolute(preludeLabelString, ImmutableMap.of());
+        this.preludeLabel = Label.parseAbsolute(preludeLabelString, RepoMapping.EMPTY);
       } catch (LabelSyntaxException e) {
         String errorMsg =
             String.format("Prelude label '%s' is invalid: %s", preludeLabelString, e.getMessage());
@@ -886,7 +886,7 @@ public class ConfiguredRuleClassProvider implements RuleClassProvider {
       EventHandler eventHandler,
       String astFileContentHashCode,
       Map<String, Extension> importMap,
-      ImmutableMap<RepositoryName, RepositoryName> repoMapping,
+      RepoMapping repoMapping,
       Label callerLabel) {
     BazelStarlarkContext context =
         new BazelStarlarkContext(
@@ -915,7 +915,7 @@ public class ConfiguredRuleClassProvider implements RuleClassProvider {
       EventHandler eventHandler,
       String astFileContentHashCode,
       Map<String, Extension> importMap,
-      ImmutableMap<RepositoryName, RepositoryName> repoMapping) {
+      RepoMapping repoMapping) {
     return createSkylarkRuleClassEnvironment(
         mutability,
         globals.withLabel(extensionLabel),

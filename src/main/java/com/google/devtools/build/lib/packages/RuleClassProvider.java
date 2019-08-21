@@ -17,6 +17,7 @@ package com.google.devtools.build.lib.packages;
 import com.google.common.collect.ImmutableMap;
 import com.google.devtools.build.lib.analysis.RuleDefinitionContext;
 import com.google.devtools.build.lib.cmdline.Label;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.cmdline.RepositoryName;
 import com.google.devtools.build.lib.events.EventHandler;
 import com.google.devtools.build.lib.packages.RuleClass.Builder.ThirdPartyLicenseExistencePolicy;
@@ -67,7 +68,7 @@ public interface RuleClassProvider extends RuleDefinitionContext {
       EventHandler eventHandler,
       @Nullable String astFileContentHashCode,
       @Nullable Map<String, Extension> importMap,
-      ImmutableMap<RepositoryName, RepositoryName> repoMapping);
+      RepoMapping repoMapping);
 
   /**
    * Returns a map from aspect names to aspect factory objects.

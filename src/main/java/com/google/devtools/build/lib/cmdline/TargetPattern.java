@@ -913,7 +913,7 @@ public abstract class TargetPattern implements Serializable {
   // TargetParsingException.
   private static Label label(String label) throws TargetParsingException {
     try {
-      return Label.parseAbsolute(label, ImmutableMap.of());
+      return Label.parseAbsolute(label, RepoMapping.EMPTY);
     } catch (LabelSyntaxException e) {
       throw new TargetParsingException("invalid target format: '"
           + StringUtilities.sanitizeControlChars(label) + "'; "

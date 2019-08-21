@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.devtools.build.lib.cmdline.Label;
 import com.google.devtools.build.lib.cmdline.LabelSyntaxException;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.concurrent.ThreadSafety.Immutable;
 import com.google.devtools.build.lib.concurrent.ThreadSafety.ThreadSafe;
 import com.google.devtools.build.lib.skyframe.serialization.autocodec.AutoCodec;
@@ -170,7 +171,7 @@ public final class License implements LicenseApi {
       if (str.startsWith("exception=")) {
         try {
           Label label =
-              Label.parseAbsolute(str.substring("exception=".length()), ImmutableMap.of());
+              Label.parseAbsolute(str.substring("exception=".length()), RepoMapping.EMPTY);
           exceptions.add(label);
         } catch (LabelSyntaxException e) {
           throw new LicenseParsingException(e.getMessage());

@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.devtools.build.lib.cmdline.Label;
 import com.google.devtools.build.lib.cmdline.LabelSyntaxException;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.cmdline.RepositoryName;
 import com.google.devtools.build.lib.packages.License.DistributionType;
 import com.google.devtools.build.lib.packages.License.LicenseParsingException;
@@ -199,10 +200,10 @@ public final class BuildType {
   /** Context in which to evaluate a label with repository remappings */
   public static class LabelConversionContext {
     private final Label label;
-    private final ImmutableMap<RepositoryName, RepositoryName> repositoryMapping;
+    private final RepoMapping repositoryMapping;
 
     public LabelConversionContext(
-        Label label, ImmutableMap<RepositoryName, RepositoryName> repositoryMapping) {
+        Label label, RepoMapping repositoryMapping) {
       this.label = label;
       this.repositoryMapping = repositoryMapping;
     }
@@ -211,7 +212,7 @@ public final class BuildType {
       return label;
     }
 
-    public ImmutableMap<RepositoryName, RepositoryName> getRepositoryMapping() {
+    public RepoMapping getRepositoryMapping() {
       return repositoryMapping;
     }
 
@@ -266,11 +267,11 @@ public final class BuildType {
         // TODO(b/110101445): check if context is ever actually null
         if (context == null) {
           return Label.parseAbsolute(
-              (String) x, /* defaultToMain= */ false, /* repositoryMapping= */ ImmutableMap.of());
+              (String) x, /* defaultToMain= */ false, /* repositoryMapping= */ RepoMapping.EMPTY);
           // TODO(b/110308446): remove instances of context being a Label
         } else if (context instanceof Label) {
           return ((Label) context)
-              .getRelativeWithRemapping(STRING.convert(x, what, context), ImmutableMap.of());
+              .getRelativeWithRemapping(STRING.convert(x, what, context), RepoMapping.EMPTY);
         } else if (context instanceof LabelConversionContext) {
           LabelConversionContext labelConversionContext = (LabelConversionContext) context;
           return labelConversionContext

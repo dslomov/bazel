@@ -27,6 +27,7 @@ import com.google.devtools.build.lib.cmdline.LabelConstants;
 import com.google.devtools.build.lib.cmdline.LabelSyntaxException;
 import com.google.devtools.build.lib.cmdline.LabelValidator;
 import com.google.devtools.build.lib.cmdline.PackageIdentifier;
+import com.google.devtools.build.lib.cmdline.RepoMapping;
 import com.google.devtools.build.lib.cmdline.RepositoryName;
 import com.google.devtools.build.lib.concurrent.NamedForkJoinPool;
 import com.google.devtools.build.lib.events.Event;
@@ -1726,7 +1727,7 @@ public final class PackageFactory {
       StarlarkSemantics starlarkSemantics,
       Map<String, Extension> imports,
       ImmutableList<Label> skylarkFileDependencies,
-      ImmutableMap<RepositoryName, RepositoryName> repositoryMapping)
+      RepoMapping repositoryMapping)
       throws InterruptedException {
     Package.Builder pkgBuilder = new Package.Builder(packageBuilderHelper.createFreshPackage(
         packageId, ruleClassProvider.getRunfilesPrefix()));
